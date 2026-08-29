@@ -18,13 +18,17 @@ export function createInitialGrid(numRows: number, numCols: number): Node[][] {
 }
 
 function createNode(row: number, col: number): Node {
+ const isStart = row === START_ROW && col === START_COL;
+const isEnd = row === END_ROW && col === END_COL;
   return {
     row,
     col,
-    isStart: row === START_ROW && col === START_COL,
-    isEnd: row === END_ROW && col === END_COL,
+    isStart,
+    isEnd,
     isWall: false,
-  };
+    isVisited: false,
+    previousNode: null,
+};
 }
 export function getNewGridWithWallToggled(grid: Node[][], row: number, col: number): Node[][] {
   const node = grid[row][col];

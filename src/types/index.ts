@@ -4,4 +4,6 @@ export interface Node {
   isStart: boolean;
   isEnd: boolean;
   isWall: boolean;
+  isVisited: boolean;
+  previousNode: Node | null;
 }
