@@ -26,3 +26,15 @@ function createNode(row: number, col: number): Node {
     isWall: false,
   };
 }
+export function getNewGridWithWallToggled(grid: Node[][], row: number, col: number): Node[][] {
+  const node = grid[row][col];
+  if (node.isStart || node.isEnd) return grid; // never wall over start/end
+
+  const newRow = grid[row].slice();
+  newRow[col] = { ...node, isWall: !node.isWall };
+
+  const newGrid = grid.slice();
+  newGrid[row] = newRow;
+
+  return newGrid;
+}

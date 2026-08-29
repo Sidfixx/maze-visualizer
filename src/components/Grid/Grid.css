@@ -26,3 +26,6 @@
 .cell-wall {
   background-color: black;
 }
+.grid {
+  user-select: none;
+}

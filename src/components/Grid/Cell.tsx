@@ -3,10 +3,13 @@ import './Grid.css';
 
 interface CellProps {
   node: Node;
+  onMouseDown: (row: number, col: number) => void;
+  onMouseEnter: (row: number, col: number) => void;
+  onMouseUp: () => void;
 }
 
-function Cell({ node }: CellProps) {
-  const { isStart, isEnd, isWall } = node;
+function Cell({ node, onMouseDown, onMouseEnter, onMouseUp }: CellProps) {
+  const { row, col, isStart, isEnd, isWall } = node;
 
   const extraClassName = isStart
     ? 'cell-start'
@@ -16,7 +19,14 @@ function Cell({ node }: CellProps) {
     ? 'cell-wall'
     : '';
 
-  return <div className={`cell ${extraClassName}`} />;
+  return (
+    <div
+      className={`cell ${extraClassName}`}
+      onMouseDown={() => onMouseDown(row, col)}
+      onMouseEnter={() => onMouseEnter(row, col)}
+      onMouseUp={onMouseUp}
+    />
+  );
 }
 
 export default Cell;
