@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Pathfinding Visualizer</h1>
+      <h1>MATSIDS</h1>
       <Grid
         grid={grid}
         onMouseDown={handleMouseDown}

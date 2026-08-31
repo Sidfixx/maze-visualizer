@@ -35,3 +35,44 @@ export function getUnvisitedNeighbors(
 
   return neighbors;
 }
+export function bfs(
+  grid: Node[][],
+  startNode: Node,
+  endNode: Node
+): Node[] {
+  const visitedNodesInOrder: Node[] = [];
+  const queue: Node[] = [];
+
+  startNode.isVisited = true;
+  queue.push(startNode);
+
+  while (queue.length > 0) {
+    const currentNode = queue.shift()!;
+visitedNodesInOrder.push(currentNode);
+
+if (currentNode === endNode) {
+    break;
+}
+const neighbors = getUnvisitedNeighbors(currentNode, grid);
+
+for (const neighbor of neighbors) {
+    neighbor.previousNode = currentNode;
+    neighbor.isVisited = true;
+    queue.push(neighbor);
+}
+
+  }
+
+  return visitedNodesInOrder;
+}
+export function reconstructPath(endNode: Node): Node[] {
+    const path: Node[] = [];
+    let currentNode: Node | null = endNode;
+
+    while (currentNode !== null) {
+        path.unshift(currentNode);
+        currentNode = currentNode.previousNode;
+    }
+
+    return path;
+}
