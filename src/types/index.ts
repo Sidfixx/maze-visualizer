@@ -7,3 +7,7 @@ export interface Node {
   isVisited: boolean;
   previousNode: Node | null;
 }
+export interface AlgorithmResult {
+  visitedNodesInOrder: Node[];
+  shortestPath: Node[];
+}

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import Grid from './components/Grid/Grid';
-import { createInitialGrid, getNewGridWithWallToggled } from './utils/gridUtils';
+import { ControlPanel } from './components/Controls/ControlPanel';
+import { createInitialGrid } from './utils/gridUtils';
+import { useAlgorithmRunner } from './hooks/useAlgorithmRunner';
+import { useAnimationPlayer } from './hooks/useAnimationPlayer';
 import type { Node } from './types';
 
 const NUM_ROWS = 15;
@@ -9,15 +12,41 @@ const NUM_COLS = 40;
 function App() {
   const [grid, setGrid] = useState<Node[][]>(() => createInitialGrid(NUM_ROWS, NUM_COLS));
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
+  const [animationSpeed] = useState(1);
+
+  const { result, isRunning, runBFS, reset } = useAlgorithmRunner();
+  const { visitedNodeIndices, pathNodeIndices, isAnimating } = useAnimationPlayer(result, animationSpeed);
+
+  // Find start and end nodes
+  const startNode = grid.flat().find(n => n.isStart)!;
+  const endNode = grid.flat().find(n => n.isEnd)!;
+
+  function handleVisualize() {
+    runBFS(grid, startNode, endNode);
+  }
+
+  function handleReset() {
+    reset(grid);
+  }
 
   function handleMouseDown(row: number, col: number) {
-    setGrid(getNewGridWithWallToggled(grid, row, col));
+    const node = grid[row][col];
+    if (!node.isStart && !node.isEnd) {
+      const newGrid = grid.map(r => [...r]);
+      newGrid[row][col] = { ...node, isWall: !node.isWall };
+      setGrid(newGrid);
+    }
     setMouseIsPressed(true);
   }
 
   function handleMouseEnter(row: number, col: number) {
     if (!mouseIsPressed) return;
-    setGrid(getNewGridWithWallToggled(grid, row, col));
+    const node = grid[row][col];
+    if (!node.isStart && !node.isEnd) {
+      const newGrid = grid.map(r => [...r]);
+      newGrid[row][col] = { ...node, isWall: !node.isWall };
+      setGrid(newGrid);
+    }
   }
 
   function handleMouseUp() {
@@ -26,12 +55,20 @@ function App() {
 
   return (
     <div className="app">
-      <h1>MATSIDS</h1>
+      <h1>Pathfinding Visualizer</h1>
+      <ControlPanel
+        onVisualize={handleVisualize}
+        onReset={handleReset}
+        isRunning={isRunning}
+        isAnimating={isAnimating}
+      />
       <Grid
         grid={grid}
         onMouseDown={handleMouseDown}
         onMouseEnter={handleMouseEnter}
         onMouseUp={handleMouseUp}
+        visitedNodeIndices={visitedNodeIndices}
+        pathNodeIndices={pathNodeIndices}
       />
     </div>
   );

@@ -29,3 +29,73 @@
 .grid {
   user-select: none;
 }
+.cell-visited {
+  background-color: #7f77dd;
+  animation: pulse 0.6s ease-in-out;
+}
+
+.cell-path {
+  background-color: #f0997b;
+  animation: pulse-path 0.3s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #7f77dd;
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    background-color: #7f77dd;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-path {
+  0% {
+    background-color: #f0997b;
+  }
+  100% {
+    background-color: #f0997b;
+  }
+}
+
+.control-panel {
+  margin: 16px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #378add;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #185fa5;
+}
+
+.btn-secondary {
+  background-color: #888780;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #5f5e5a;
+}
