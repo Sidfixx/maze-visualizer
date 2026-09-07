@@ -1,12 +1,14 @@
 interface ControlPanelProps {
-  onVisualize: () => void;
+  onVisualizeBFS: () => void;
+  onVisualizeDFS: () => void;
   onReset: () => void;
   isRunning: boolean;
   isAnimating: boolean;
 }
 
 export function ControlPanel({
-  onVisualize,
+  onVisualizeBFS,
+  onVisualizeDFS,
   onReset,
   isRunning,
   isAnimating,
@@ -14,11 +16,18 @@ export function ControlPanel({
   return (
     <div className="control-panel">
       <button
-        onClick={onVisualize}
+        onClick={onVisualizeBFS}
         disabled={isRunning || isAnimating}
         className="btn btn-primary"
       >
-        {isRunning ? 'Running...' : isAnimating ? 'Animating...' : 'Visualize BFS'}
+        Visualize BFS
+      </button>
+      <button
+        onClick={onVisualizeDFS}
+        disabled={isRunning || isAnimating}
+        className="btn btn-primary"
+      >
+        Visualize DFS
       </button>
       <button onClick={onReset} className="btn btn-secondary">
         Reset

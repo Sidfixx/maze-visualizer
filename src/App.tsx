@@ -14,15 +14,18 @@ function App() {
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [animationSpeed] = useState(1);
 
-  const { result, isRunning, runBFS, reset } = useAlgorithmRunner();
+  const { result, isRunning, runBFS, runDFS, reset } = useAlgorithmRunner();
   const { visitedNodeIndices, pathNodeIndices, isAnimating } = useAnimationPlayer(result, animationSpeed);
 
-  // Find start and end nodes
   const startNode = grid.flat().find(n => n.isStart)!;
   const endNode = grid.flat().find(n => n.isEnd)!;
 
-  function handleVisualize() {
+  function handleVisualizeBFS() {
     runBFS(grid, startNode, endNode);
+  }
+
+  function handleVisualizeDFS() {
+    runDFS(grid, startNode, endNode);
   }
 
   function handleReset() {
@@ -57,7 +60,8 @@ function App() {
     <div className="app">
       <h1>Pathfinding Visualizer</h1>
       <ControlPanel
-        onVisualize={handleVisualize}
+        onVisualizeBFS={handleVisualizeBFS}
+        onVisualizeDFS={handleVisualizeDFS}
         onReset={handleReset}
         isRunning={isRunning}
         isAnimating={isAnimating}
