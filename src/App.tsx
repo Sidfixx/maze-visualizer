@@ -14,7 +14,8 @@ function App() {
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [animationSpeed] = useState(1);
 
-  const { result, isRunning, runBFS, runDFS, reset } = useAlgorithmRunner();
+  // THIS LINE CHANGED: added runDijkstra
+  const { result, isRunning, runBFS, runDFS, runDijkstra, reset } = useAlgorithmRunner();
   const { visitedNodeIndices, pathNodeIndices, isAnimating } = useAnimationPlayer(result, animationSpeed);
 
   const startNode = grid.flat().find(n => n.isStart)!;
@@ -26,6 +27,11 @@ function App() {
 
   function handleVisualizeDFS() {
     runDFS(grid, startNode, endNode);
+  }
+
+  // THIS IS NEW: add this function
+  function handleVisualizeDijkstra() {
+    runDijkstra(grid, startNode, endNode);
   }
 
   function handleReset() {
@@ -59,9 +65,11 @@ function App() {
   return (
     <div className="app">
       <h1>Pathfinding Visualizer</h1>
+      {/* THIS CHANGED: added onVisualizeDijkstra prop */}
       <ControlPanel
         onVisualizeBFS={handleVisualizeBFS}
         onVisualizeDFS={handleVisualizeDFS}
+        onVisualizeDijkstra={handleVisualizeDijkstra}
         onReset={handleReset}
         isRunning={isRunning}
         isAnimating={isAnimating}

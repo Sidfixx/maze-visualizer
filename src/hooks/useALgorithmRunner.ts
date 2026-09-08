@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { Node, AlgorithmResult } from '../types';
-import { bfs } from '../algorithms/bfs';
+import { bfs, reconstructPath } from '../algorithms/bfs';
 import { dfs } from '../algorithms/dfs';
-import { reconstructPath } from '../algorithms/bfs';
+import { dijkstra } from '../algorithms/dijkstra';
 import { cloneGrid, resetGridState } from '../utils/gridUtils';
 
 export function useAlgorithmRunner() {
@@ -40,6 +40,8 @@ export function useAlgorithmRunner() {
       runAlgorithm(bfs, grid, start, end),
     runDFS: (grid: Node[][], start: Node, end: Node) =>
       runAlgorithm(dfs, grid, start, end),
+    runDijkstra: (grid: Node[][], start: Node, end: Node) =>
+      runAlgorithm(dijkstra, grid, start, end),
     reset,
   };
 }

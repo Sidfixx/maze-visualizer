@@ -28,6 +28,8 @@ const isEnd = row === END_ROW && col === END_COL;
     isWall: false,
     isVisited: false,
     previousNode: null,
+    distance: Infinity,
+    weight: 1,
 };
 }
 export function getNewGridWithWallToggled(grid: Node[][], row: number, col: number): Node[][] {

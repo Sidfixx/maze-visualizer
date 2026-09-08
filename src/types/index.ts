@@ -6,6 +6,8 @@ export interface Node {
   isWall: boolean;
   isVisited: boolean;
   previousNode: Node | null;
+  distance: number;
+  weight: number;
 }
 export interface AlgorithmResult {
   visitedNodesInOrder: Node[];
