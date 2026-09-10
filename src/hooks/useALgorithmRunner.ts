@@ -1,3 +1,4 @@
+import { astar } from '../algorithms/astar';
 import { useState } from 'react';
 import type { Node, AlgorithmResult } from '../types';
 import { bfs, reconstructPath } from '../algorithms/bfs';
@@ -43,5 +44,7 @@ export function useAlgorithmRunner() {
     runDijkstra: (grid: Node[][], start: Node, end: Node) =>
       runAlgorithm(dijkstra, grid, start, end),
     reset,
+    runAStar: (grid: Node[][], start: Node, end: Node) =>
+  runAlgorithm(astar, grid, start, end),
   };
 }

@@ -2,6 +2,7 @@ interface ControlPanelProps {
   onVisualizeBFS: () => void;
   onVisualizeDFS: () => void;
   onVisualizeDijkstra: () => void;
+  onVisualizeAStar: () => void;
   onReset: () => void;
   isRunning: boolean;
   isAnimating: boolean;
@@ -11,6 +12,7 @@ export function ControlPanel({
   onVisualizeBFS,
   onVisualizeDFS,
   onVisualizeDijkstra,
+  onVisualizeAStar,
   onReset,
   isRunning,
   isAnimating,
@@ -37,6 +39,13 @@ export function ControlPanel({
         className="btn btn-primary"
       >
         Visualize Dijkstra
+      </button>
+      <button
+        onClick={onVisualizeAStar}
+        disabled={isRunning || isAnimating}
+        className="btn btn-primary"
+      >
+        Visualize A*
       </button>
       <button onClick={onReset} className="btn btn-secondary">
         Reset
