@@ -59,6 +59,7 @@ export function resetGridState(grid: Node[][]): void {
       const node = grid[row][col];
       node.isVisited = false;
       node.previousNode = null;
+      node.distance = Infinity;  
     }
   }
 }

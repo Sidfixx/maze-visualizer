@@ -1,6 +1,6 @@
+import type { Node, AlgorithmResult, AlgorithmStats } from '../types';
 import { astar } from '../algorithms/astar';
 import { useState } from 'react';
-import type { Node, AlgorithmResult } from '../types';
 import { bfs, reconstructPath } from '../algorithms/bfs';
 import { dfs } from '../algorithms/dfs';
 import { dijkstra } from '../algorithms/dijkstra';
@@ -12,6 +12,7 @@ export function useAlgorithmRunner() {
 
   function runAlgorithm(
     algorithm: (grid: Node[][], start: Node, end: Node) => Node[],
+    algorithmName: string,
     grid: Node[][],
     startNode: Node,
     endNode: Node
@@ -25,7 +26,13 @@ export function useAlgorithmRunner() {
     const visitedNodesInOrder = algorithm(clonedGrid, clonedStart, clonedEnd);
     const shortestPath = reconstructPath(clonedEnd);
 
-    setResult({ visitedNodesInOrder, shortestPath });
+    const stats: AlgorithmStats = {
+      algorithm: algorithmName,
+      nodesVisited: visitedNodesInOrder.length,
+      pathLength: shortestPath.length,
+    };
+
+    setResult({ visitedNodesInOrder, shortestPath, stats });
     setIsRunning(false);
   }
 
@@ -38,13 +45,13 @@ export function useAlgorithmRunner() {
     result,
     isRunning,
     runBFS: (grid: Node[][], start: Node, end: Node) =>
-      runAlgorithm(bfs, grid, start, end),
+      runAlgorithm(bfs, 'BFS', grid, start, end),
     runDFS: (grid: Node[][], start: Node, end: Node) =>
-      runAlgorithm(dfs, grid, start, end),
+      runAlgorithm(dfs, 'DFS', grid, start, end),
     runDijkstra: (grid: Node[][], start: Node, end: Node) =>
-      runAlgorithm(dijkstra, grid, start, end),
-    reset,
+      runAlgorithm(dijkstra, 'Dijkstra', grid, start, end),
     runAStar: (grid: Node[][], start: Node, end: Node) =>
-  runAlgorithm(astar, grid, start, end),
+      runAlgorithm(astar, 'A*', grid, start, end),
+    reset,
   };
 }

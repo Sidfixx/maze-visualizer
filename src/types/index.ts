@@ -12,4 +12,10 @@ export interface Node {
 export interface AlgorithmResult {
   visitedNodesInOrder: Node[];
   shortestPath: Node[];
+  stats?: AlgorithmStats;
+}
+export interface AlgorithmStats {
+  nodesVisited: number;
+  pathLength: number;
+  algorithm: string;
 }

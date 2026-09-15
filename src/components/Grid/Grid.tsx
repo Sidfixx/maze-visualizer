@@ -4,9 +4,10 @@ import './Grid.css';
 
 interface GridProps {
   grid: Node[][];
-  onMouseDown: (row: number, col: number) => void;
+  onMouseDown: (row: number, col: number, e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseEnter: (row: number, col: number) => void;
   onMouseUp: () => void;
+  onRightClick: (row: number, col: number) => void;
   visitedNodeIndices: Set<string>;
   pathNodeIndices: Set<string>;
 }
@@ -16,6 +17,7 @@ function Grid({
   onMouseDown,
   onMouseEnter,
   onMouseUp,
+  onRightClick,
   visitedNodeIndices,
   pathNodeIndices,
 }: GridProps) {
@@ -35,6 +37,7 @@ function Grid({
                 onMouseDown={onMouseDown}
                 onMouseEnter={onMouseEnter}
                 onMouseUp={onMouseUp}
+                onRightClick={onRightClick}
                 isVisited={isVisited}
                 isPath={isPath}
               />

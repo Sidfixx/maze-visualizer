@@ -99,3 +99,11 @@
 .btn-secondary:hover:not(:disabled) {
   background-color: #5f5e5a;
 }
+.cell-weighted {
+  background-color: #f4d03f;
+  opacity: 0.8;
+}
+
+.cell-weighted:hover {
+  opacity: 1;
+}

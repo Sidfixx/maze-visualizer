@@ -1,3 +1,4 @@
+import { StatsPanel } from './components/Stats/StatsPanel';
 import { useState } from 'react';
 import Grid from './components/Grid/Grid';
 import { ControlPanel } from './components/Controls/ControlPanel';
@@ -14,7 +15,6 @@ function App() {
   const [mouseIsPressed, setMouseIsPressed] = useState(false);
   const [animationSpeed] = useState(1);
 
-  // THIS LINE CHANGED: added runDijkstra
   const { result, isRunning, runBFS, runDFS, runDijkstra, runAStar, reset } = useAlgorithmRunner();
   const { visitedNodeIndices, pathNodeIndices, isAnimating } = useAnimationPlayer(result, animationSpeed);
 
@@ -29,19 +29,22 @@ function App() {
     runDFS(grid, startNode, endNode);
   }
 
-  // THIS IS NEW: add this function
   function handleVisualizeDijkstra() {
     runDijkstra(grid, startNode, endNode);
   }
+
   function handleVisualizeAStar() {
-  runAStar(grid, startNode, endNode);
-}
+    runAStar(grid, startNode, endNode);
+  }
 
   function handleReset() {
     reset(grid);
   }
 
-  function handleMouseDown(row: number, col: number) {
+  function handleMouseDown(row: number, col: number, e: React.MouseEvent<HTMLDivElement>) {
+    // Only respond to left-click (button 0)
+    if (e.button !== 0) return;
+
     const node = grid[row][col];
     if (!node.isStart && !node.isEnd) {
       const newGrid = grid.map(r => [...r]);
@@ -65,27 +68,39 @@ function App() {
     setMouseIsPressed(false);
   }
 
+  function handleRightClick(row: number, col: number) {
+  const node = grid[row][col];
+  
+  if (node.isStart || node.isEnd || node.isWall) return;
+
+  const newGrid = grid.map(r => [...r]);
+  const newWeight = node.weight === 1 ? 5 : 1;
+  console.log('Setting cell weight to:', newWeight);  // ADD THIS
+  newGrid[row][col] = { ...node, weight: newWeight };
+  setGrid(newGrid);
+}
   return (
     <div className="app">
       <h1>Pathfinding Visualizer</h1>
-      {/* THIS CHANGED: added onVisualizeDijkstra prop */}
-     <ControlPanel
-  onVisualizeBFS={handleVisualizeBFS}
-  onVisualizeDFS={handleVisualizeDFS}
-  onVisualizeDijkstra={handleVisualizeDijkstra}
-  onVisualizeAStar={handleVisualizeAStar}
-  onReset={handleReset}
-  isRunning={isRunning}
-  isAnimating={isAnimating}
-/>
+      <ControlPanel
+        onVisualizeBFS={handleVisualizeBFS}
+        onVisualizeDFS={handleVisualizeDFS}
+        onVisualizeDijkstra={handleVisualizeDijkstra}
+        onVisualizeAStar={handleVisualizeAStar}
+        onReset={handleReset}
+        isRunning={isRunning}
+        isAnimating={isAnimating}
+      />
       <Grid
         grid={grid}
         onMouseDown={handleMouseDown}
         onMouseEnter={handleMouseEnter}
         onMouseUp={handleMouseUp}
+        onRightClick={handleRightClick}
         visitedNodeIndices={visitedNodeIndices}
         pathNodeIndices={pathNodeIndices}
       />
+      <StatsPanel stats={result?.stats} />
     </div>
   );
 }

@@ -1,0 +1,30 @@
+.stats-panel {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #378add;
+}
+
+.stats-panel h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.stat-value {
+  color: #378add;
+  font-weight: bold;
+}
