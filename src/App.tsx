@@ -6,6 +6,7 @@ import { createInitialGrid } from './utils/gridUtils';
 import { useAlgorithmRunner } from './hooks/useAlgorithmRunner';
 import { useAnimationPlayer } from './hooks/useAnimationPlayer';
 import { generateRandomMaze } from './mazes/randomMaze';
+import { generateRecursiveBacktrackingMaze } from './mazes/recursiveBacktracking';
 import type { Node } from './types';
 
 const NUM_ROWS = 15;
@@ -47,6 +48,13 @@ function App() {
     reset(grid);
     // Generate a brand-new grid with random walls, then replace state.
     setGrid(generateRandomMaze(grid));
+  }
+
+  function handleGenerateRecursiveBacktracking() {
+    // Clear any existing algorithm result / animation first.
+    reset(grid);
+    // Generate a brand-new grid with Recursive Backtracking maze, then replace state.
+    setGrid(generateRecursiveBacktrackingMaze(grid));
   }
 
   function handleMouseDown(row: number, col: number, e: React.MouseEvent<HTMLDivElement>) {
@@ -97,6 +105,7 @@ function App() {
         onVisualizeAStar={handleVisualizeAStar}
         onReset={handleReset}
         onGenerateRandomMaze={handleGenerateRandomMaze}
+        onGenerateRecursiveBacktracking={handleGenerateRecursiveBacktracking}
         isRunning={isRunning}
         isAnimating={isAnimating}
       />
