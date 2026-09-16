@@ -107,3 +107,21 @@
 .cell-weighted:hover {
   opacity: 1;
 }
+
+/* ── Maze generation button ─────────────────────────────────── */
+.btn-maze {
+  background-color: #2a9d8f;
+  color: white;
+}
+
+.btn-maze:hover:not(:disabled) {
+  background-color: #1f7a6e;
+}
+
+/* Thin vertical rule separating pathfinding buttons from maze buttons */
+.control-divider {
+  width: 1px;
+  align-self: stretch;
+  background-color: #ccc;
+  margin: 0 4px;
+}

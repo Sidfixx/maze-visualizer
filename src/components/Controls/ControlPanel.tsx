@@ -4,6 +4,7 @@ interface ControlPanelProps {
   onVisualizeDijkstra: () => void;
   onVisualizeAStar: () => void;
   onReset: () => void;
+  onGenerateRandomMaze: () => void;
   isRunning: boolean;
   isAnimating: boolean;
 }
@@ -14,6 +15,7 @@ export function ControlPanel({
   onVisualizeDijkstra,
   onVisualizeAStar,
   onReset,
+  onGenerateRandomMaze,
   isRunning,
   isAnimating,
 }: ControlPanelProps) {
@@ -49,6 +51,16 @@ export function ControlPanel({
       </button>
       <button onClick={onReset} className="btn btn-secondary">
         Reset
+      </button>
+
+      {/* ── Maze Generation ───────────────────────────────── */}
+      <div className="control-divider" />
+      <button
+        onClick={onGenerateRandomMaze}
+        disabled={isRunning || isAnimating}
+        className="btn btn-maze"
+      >
+        Random Maze
       </button>
     </div>
   );

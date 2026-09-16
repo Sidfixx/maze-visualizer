@@ -1,25 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Node, AlgorithmResult } from '../types';
 
 export function useAnimationPlayer(
   result: AlgorithmResult | null,
-  speed: number = 1 // speed multiplier: 1 = normal, 2 = 2x fast, 0.5 = half speed
+  speed: number = 1
 ) {
   const [visitedNodeIndices, setVisitedNodeIndices] = useState<Set<string>>(new Set());
   const [pathNodeIndices, setPathNodeIndices] = useState<Set<string>>(new Set());
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  const visitedIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pathIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!result) {
       setVisitedNodeIndices(new Set());
       setPathNodeIndices(new Set());
+      setIsAnimating(false);
+      // Clear any running intervals
+      if (visitedIntervalRef.current) clearInterval(visitedIntervalRef.current);
+      if (pathIntervalRef.current) clearInterval(pathIntervalRef.current);
       return;
     }
 
     setIsAnimating(true);
     let visitedIndex = 0;
 
-    // Animate visited nodes
     const visitedInterval = setInterval(() => {
       if (visitedIndex < result.visitedNodesInOrder.length) {
         const node = result.visitedNodesInOrder[visitedIndex];
@@ -27,10 +33,11 @@ export function useAnimationPlayer(
         visitedIndex++;
       } else {
         clearInterval(visitedInterval);
-        // Once visited is done, start path animation
         animatePath();
       }
-    }, 10 / speed); // 10ms per node, adjusted by speed
+    }, 10 / speed);
+
+    visitedIntervalRef.current = visitedInterval;
 
     function animatePath() {
       let pathIndex = 0;
@@ -43,11 +50,14 @@ export function useAnimationPlayer(
           clearInterval(pathInterval);
           setIsAnimating(false);
         }
-      }, 50 / speed); // 50ms per path node
+      }, 50 / speed);
+
+      pathIntervalRef.current = pathInterval;
     }
 
     return () => {
-      clearInterval(visitedInterval);
+      if (visitedIntervalRef.current) clearInterval(visitedIntervalRef.current);
+      if (pathIntervalRef.current) clearInterval(pathIntervalRef.current);
     };
   }, [result, speed]);
 

@@ -5,6 +5,7 @@ import { ControlPanel } from './components/Controls/ControlPanel';
 import { createInitialGrid } from './utils/gridUtils';
 import { useAlgorithmRunner } from './hooks/useAlgorithmRunner';
 import { useAnimationPlayer } from './hooks/useAnimationPlayer';
+import { generateRandomMaze } from './mazes/randomMaze';
 import type { Node } from './types';
 
 const NUM_ROWS = 15;
@@ -39,6 +40,13 @@ function App() {
 
   function handleReset() {
     reset(grid);
+  }
+
+  function handleGenerateRandomMaze() {
+    // Clear any existing algorithm result / animation first.
+    reset(grid);
+    // Generate a brand-new grid with random walls, then replace state.
+    setGrid(generateRandomMaze(grid));
   }
 
   function handleMouseDown(row: number, col: number, e: React.MouseEvent<HTMLDivElement>) {
@@ -88,6 +96,7 @@ function App() {
         onVisualizeDijkstra={handleVisualizeDijkstra}
         onVisualizeAStar={handleVisualizeAStar}
         onReset={handleReset}
+        onGenerateRandomMaze={handleGenerateRandomMaze}
         isRunning={isRunning}
         isAnimating={isAnimating}
       />

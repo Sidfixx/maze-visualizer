@@ -37,9 +37,10 @@ export function useAlgorithmRunner() {
   }
 
   function reset(grid: Node[][]) {
-    resetGridState(grid);
-    setResult(null);
-  }
+  resetGridState(grid);
+  setResult(null);
+  setIsRunning(false);  
+}
 
   return {
     result,
