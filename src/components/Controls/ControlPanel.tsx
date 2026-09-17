@@ -6,6 +6,7 @@ interface ControlPanelProps {
   onReset: () => void;
   onGenerateRandomMaze: () => void;
   onGenerateRecursiveBacktracking: () => void;
+  onGeneratePrimsMaze: () => void;
   isRunning: boolean;
   isAnimating: boolean;
 }
@@ -18,6 +19,7 @@ export function ControlPanel({
   onReset,
   onGenerateRandomMaze,
   onGenerateRecursiveBacktracking,
+  onGeneratePrimsMaze,
   isRunning,
   isAnimating,
 }: ControlPanelProps) {
@@ -70,6 +72,13 @@ export function ControlPanel({
         className="btn btn-maze"
       >
         Recursive Backtracking
+      </button>
+      <button
+        onClick={onGeneratePrimsMaze}
+        disabled={isRunning || isAnimating}
+        className="btn btn-maze"
+      >
+        Prim's Maze
       </button>
     </div>
   );
