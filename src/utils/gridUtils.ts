@@ -53,13 +53,17 @@ export function cloneGrid(grid: Node[][]): Node[][] {
   );
 }
 
-export function resetGridState(grid: Node[][]): void {
-  for (let row = 0; row < grid.length; row++) {
-    for (let col = 0; col < grid[row].length; col++) {
-      const node = grid[row][col];
-      node.isVisited = false;
-      node.previousNode = null;
-      node.distance = Infinity;  
-    }
-  }
+export function resetGridState(grid: Node[][]): Node[][] {
+  return grid.map(row =>
+    row.map(node => ({
+      ...node,
+      isWall: false,
+      isVisited: false,
+      previousNode: null,
+      distance: Infinity,
+      weight: 1,
+      isStart: node.row === START_ROW && node.col === START_COL,
+      isEnd: node.row === END_ROW && node.col === END_COL,
+    }))
+  );
 }

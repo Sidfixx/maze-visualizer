@@ -17,10 +17,20 @@
 
 .cell-start {
   background-color: green;
+  cursor: grab;
+}
+
+.cell-start:active {
+  cursor: grabbing;
 }
 
 .cell-end {
   background-color: red;
+  cursor: grab;
+}
+
+.cell-end:active {
+  cursor: grabbing;
 }
 
 .cell-wall {
