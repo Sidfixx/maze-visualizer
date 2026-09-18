@@ -23,14 +23,24 @@ export function useAlgorithmRunner() {
     const clonedStart = clonedGrid[startNode.row][startNode.col];
     const clonedEnd = clonedGrid[endNode.row][endNode.col];
 
-    const visitedNodesInOrder = algorithm(clonedGrid, clonedStart, clonedEnd);
-    const shortestPath = reconstructPath(clonedEnd);
+    const startTime = performance.now();
 
-    const stats: AlgorithmStats = {
-      algorithm: algorithmName,
-      nodesVisited: visitedNodesInOrder.length,
-      pathLength: shortestPath.length,
-    };
+const visitedNodesInOrder = algorithm(
+  clonedGrid,
+  clonedStart,
+  clonedEnd
+);
+
+const shortestPath = reconstructPath(clonedEnd);
+
+const endTime = performance.now();
+
+const stats: AlgorithmStats = {
+  algorithm: algorithmName,
+  nodesVisited: visitedNodesInOrder.length,
+  pathLength: shortestPath.length,
+  executionTime: endTime - startTime,
+};
 
     setResult({ visitedNodesInOrder, shortestPath, stats });
     setIsRunning(false);

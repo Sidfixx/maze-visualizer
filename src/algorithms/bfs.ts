@@ -65,14 +65,23 @@ for (const neighbor of neighbors) {
 
   return visitedNodesInOrder;
 }
-export function reconstructPath(endNode: Node): Node[] {
-    const path: Node[] = [];
-    let currentNode: Node | null = endNode;
+export function reconstructPath(
+  endNode: Node,
+  startNode: Node
+): Node[] {
+  // If the end node was never reached,
+  // there is no path.
+  if (endNode !== startNode && endNode.previousNode === null) {
+    return [];
+  }
 
-    while (currentNode !== null) {
-        path.unshift(currentNode);
-        currentNode = currentNode.previousNode;
-    }
+  const path: Node[] = [];
+  let currentNode: Node | null = endNode;
 
-    return path;
+  while (currentNode !== null) {
+    path.unshift(currentNode);
+    currentNode = currentNode.previousNode;
+  }
+
+  return path;
 }

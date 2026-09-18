@@ -17,5 +17,6 @@ export interface AlgorithmResult {
 export interface AlgorithmStats {
   nodesVisited: number;
   pathLength: number;
+  executionTime: number;
   algorithm: string;
 }

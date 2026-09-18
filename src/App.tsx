@@ -334,9 +334,10 @@ function App() {
         pathNodeIndices={pathNodeIndices}
       />
 
-      <StatsPanel stats={result?.stats} />
-    </div>
-  );
-}
+        {result && !isAnimating && (
+        <StatsPanel stats={result.stats} />
+        )}    </div>
+         );
+          }
 
 export default App;
