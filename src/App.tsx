@@ -24,6 +24,12 @@ function App() {
     'start' | 'end' | null
   >(null);
 
+  // Determines whether normal mouse dragging should
+  // create walls or erase walls.
+  const [wallMode, setWallMode] = useState<'draw' | 'erase' | null>(
+    null
+  );
+
   const [animationSpeed] = useState(1);
 
   const {
@@ -72,12 +78,9 @@ function App() {
   function handleReset() {
     reset(grid);
 
-    // IMPORTANT:
-    // Do NOT create a new grid here.
-    // The existing maze, walls, weights,
-    // Start and End should remain.
     setDraggingNode(null);
     setMouseIsPressed(false);
+    setWallMode(null);
   }
 
   // -----------------------------
@@ -92,6 +95,7 @@ function App() {
 
     setDraggingNode(null);
     setMouseIsPressed(false);
+    setWallMode(null);
   }
 
   function handleGenerateRecursiveBacktracking() {
@@ -102,6 +106,7 @@ function App() {
 
     setDraggingNode(null);
     setMouseIsPressed(false);
+    setWallMode(null);
   }
 
   function handleGeneratePrimsMaze() {
@@ -112,6 +117,7 @@ function App() {
 
     setDraggingNode(null);
     setMouseIsPressed(false);
+    setWallMode(null);
   }
 
   // -----------------------------
@@ -127,22 +133,41 @@ function App() {
 
     const node = grid[row][col];
 
-    // Start dragging Start node
+    // -----------------------------
+    // Start node dragging
+    // -----------------------------
+
     if (node.isStart) {
       setDraggingNode('start');
       setMouseIsPressed(true);
       return;
     }
 
-    // Start dragging End node
+    // -----------------------------
+    // End node dragging
+    // -----------------------------
+
     if (node.isEnd) {
       setDraggingNode('end');
       setMouseIsPressed(true);
       return;
     }
 
+    // -----------------------------
     // Normal wall interaction
+    // -----------------------------
+
     if (!node.isStart && !node.isEnd) {
+      // If the clicked cell is already a wall,
+      // we are in erase mode.
+      if (node.isWall) {
+        setWallMode('erase');
+      } else {
+        // If the clicked cell is empty,
+        // we are in draw mode.
+        setWallMode('draw');
+      }
+
       const newGrid = grid.map((row) => [...row]);
 
       newGrid[row][col] = {
@@ -165,7 +190,10 @@ function App() {
 
     const node = grid[row][col];
 
+    // -----------------------------
     // Dragging Start
+    // -----------------------------
+
     if (draggingNode === 'start') {
       if (node.isEnd || node.isWall) return;
 
@@ -192,7 +220,10 @@ function App() {
       return;
     }
 
+    // -----------------------------
     // Dragging End
+    // -----------------------------
+
     if (draggingNode === 'end') {
       if (node.isStart || node.isWall) return;
 
@@ -219,13 +250,16 @@ function App() {
       return;
     }
 
-    // Normal wall drawing
-    if (!node.isStart && !node.isEnd) {
+    // -----------------------------
+    // Normal wall drawing/erasing
+    // -----------------------------
+
+    if (!node.isStart && !node.isEnd && wallMode !== null) {
       const newGrid = grid.map((row) => [...row]);
 
       newGrid[row][col] = {
         ...node,
-        isWall: !node.isWall,
+        isWall: wallMode === 'draw',
       };
 
       setGrid(newGrid);
@@ -239,6 +273,7 @@ function App() {
   function handleMouseUp() {
     setMouseIsPressed(false);
     setDraggingNode(null);
+    setWallMode(null);
   }
 
   // -----------------------------
