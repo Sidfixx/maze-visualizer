@@ -1,6 +1,7 @@
 .grid {
   display: inline-block;
   border: 1px solid #333;
+  user-select: none;
 }
 
 .grid-row {
@@ -15,6 +16,8 @@
   background-color: white;
 }
 
+/* Start Node */
+
 .cell-start {
   background-color: green;
   cursor: grab;
@@ -23,6 +26,8 @@
 .cell-start:active {
   cursor: grabbing;
 }
+
+/* End Node */
 
 .cell-end {
   background-color: red;
@@ -33,30 +38,49 @@
   cursor: grabbing;
 }
 
+/* Walls */
+
 .cell-wall {
   background-color: black;
 }
-.grid {
-  user-select: none;
-}
+
+/* Visited Nodes */
+
 .cell-visited {
   background-color: #7f77dd;
   animation: pulse 0.6s ease-in-out;
 }
+
+/* Shortest Path */
 
 .cell-path {
   background-color: #f0997b;
   animation: pulse-path 0.3s ease-in-out;
 }
 
+/* Weighted Nodes */
+
+.cell-weighted {
+  background-color: #f4d03f;
+  opacity: 0.8;
+}
+
+.cell-weighted:hover {
+  opacity: 1;
+}
+
+/* Animations */
+
 @keyframes pulse {
   0% {
     background-color: #7f77dd;
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
+
   100% {
     background-color: #7f77dd;
     transform: scale(1);
@@ -67,71 +91,161 @@
   0% {
     background-color: #f0997b;
   }
+
   100% {
     background-color: #f0997b;
   }
 }
 
+/* =========================================================
+   CONTROL PANEL
+   ========================================================= */
+
 .control-panel {
-  margin: 16px 0;
+  margin: 20px 0;
+  padding: 18px;
   display: flex;
-  gap: 8px;
+  align-items: stretch;
+  gap: 16px;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-sizing: border-box;
 }
 
+/* Individual sections */
+
+.control-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Section titles */
+
+.control-section-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Button groups */
+
+.control-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* General button */
+
 .btn {
-  padding: 8px 16px;
+  padding: 9px 14px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  transition: opacity 0.2s;
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
 }
+
+/* Pathfinding buttons */
 
 .btn-primary {
   background-color: #378add;
-  color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: #185fa5;
 }
 
-.btn-secondary {
-  background-color: #888780;
-  color: white;
-}
+/* Maze buttons */
 
-.btn-secondary:hover:not(:disabled) {
-  background-color: #5f5e5a;
-}
-.cell-weighted {
-  background-color: #f4d03f;
-  opacity: 0.8;
-}
-
-.cell-weighted:hover {
-  opacity: 1;
-}
-
-/* ── Maze generation button ─────────────────────────────────── */
 .btn-maze {
   background-color: #2a9d8f;
-  color: white;
 }
 
 .btn-maze:hover:not(:disabled) {
   background-color: #1f7a6e;
 }
 
-/* Thin vertical rule separating pathfinding buttons from maze buttons */
-.control-divider {
-  width: 1px;
-  align-self: stretch;
-  background-color: #ccc;
-  margin: 0 4px;
-}
+/* Reset */
+
+.btn-secondary {
+  background-color: #666;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #444;
+}
+
+/* Reset section */
+
+.control-section-actions {
+  justify-content: flex-end;
+}
+
+/* =========================================================
+   RESPONSIVE LAYOUT
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .control-panel {
+    flex-direction: column;
+  }
+
+  .control-section-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================================
+   ANIMATION SPEED
+   ========================================================= */
+
+.speed-section {
+  min-width: 190px;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speed-label {
+  font-size: 11px;
+  color: #888;
+}
+
+.speed-slider {
+  width: 100px;
+  cursor: pointer;
+}
+
+.speed-value {
+  font-size: 11px;
+  color: #aaa;
+  text-align: center;
+}

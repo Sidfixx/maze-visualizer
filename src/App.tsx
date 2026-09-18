@@ -30,7 +30,8 @@ function App() {
     null
   );
 
-  const [animationSpeed] = useState(1);
+  const [animationSpeed, setAnimationSpeed] = useState(5);
+
 
   const {
     result,
@@ -307,6 +308,8 @@ function App() {
       <h1>Pathfinding Visualizer</h1>
 
       <ControlPanel
+        animationSpeed={animationSpeed}
+        onSpeedChange={setAnimationSpeed}
         onVisualizeBFS={handleVisualizeBFS}
         onVisualizeDFS={handleVisualizeDFS}
         onVisualizeDijkstra={handleVisualizeDijkstra}
