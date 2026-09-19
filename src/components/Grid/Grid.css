@@ -142,63 +142,6 @@
 
 /* General button */
 
-.btn {
-  padding: 9px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: white;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease,
-    opacity 0.2s ease;
-}
-
-.btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Pathfinding buttons */
-
-.btn-primary {
-  background-color: #378add;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #185fa5;
-}
-
-/* Maze buttons */
-
-.btn-maze {
-  background-color: #2a9d8f;
-}
-
-.btn-maze:hover:not(:disabled) {
-  background-color: #1f7a6e;
-}
-
-/* Reset */
-
-.btn-secondary {
-  background-color: #666;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background-color: #444;
-}
 
 /* Reset section */
 

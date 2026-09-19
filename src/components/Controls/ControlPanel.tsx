@@ -1,3 +1,5 @@
+import './ControlPanel.css';
+
 interface ControlPanelProps {
   onVisualizeBFS: () => void;
   onVisualizeDFS: () => void;
@@ -42,18 +44,35 @@ export function ControlPanel({
   const isReady = statusMessage === 'Ready';
 
   return (
-    <div className="control-panel">
-      {/* Pathfinding Algorithms */}
-      <div className="control-section">
-        <h2 className="control-section-title">
-          Pathfinding Algorithms
-        </h2>
+    <aside className="control-panel">
+      {/* Header */}
+      <div className="control-header">
+        <div>
+          <span className="control-eyebrow">
+            VISUALIZER
+          </span>
 
-        <div className="control-group">
+          <h2 className="control-title">
+            Controls
+          </h2>
+        </div>
+
+        <div className="control-menu-icon">
+          ⋮
+        </div>
+      </div>
+
+      {/* Pathfinding */}
+      <section className="control-section">
+        <span className="control-section-label">
+          Pathfinding Algorithms
+        </span>
+
+        <div className="algorithm-buttons">
           <button
             onClick={onVisualizeBFS}
             disabled={controlsDisabled}
-            className="btn btn-primary"
+            className="control-button control-button-light"
           >
             BFS
           </button>
@@ -61,7 +80,7 @@ export function ControlPanel({
           <button
             onClick={onVisualizeDFS}
             disabled={controlsDisabled}
-            className="btn btn-primary"
+            className="control-button control-button-light"
           >
             DFS
           </button>
@@ -69,7 +88,7 @@ export function ControlPanel({
           <button
             onClick={onVisualizeDijkstra}
             disabled={controlsDisabled}
-            className="btn btn-primary"
+            className="control-button control-button-light"
           >
             Dijkstra
           </button>
@@ -77,24 +96,24 @@ export function ControlPanel({
           <button
             onClick={onVisualizeAStar}
             disabled={controlsDisabled}
-            className="btn btn-primary"
+            className="control-button control-button-light"
           >
             A*
           </button>
         </div>
-      </div>
+      </section>
 
       {/* Maze Generation */}
-      <div className="control-section">
-        <h2 className="control-section-title">
+      <section className="control-section">
+        <span className="control-section-label">
           Maze Generation
-        </h2>
+        </span>
 
-        <div className="control-group">
+        <div className="maze-buttons">
           <button
             onClick={onGenerateRandomMaze}
             disabled={controlsDisabled}
-            className="btn btn-maze"
+            className="control-button control-button-outline"
           >
             Random Maze
           </button>
@@ -102,7 +121,7 @@ export function ControlPanel({
           <button
             onClick={onGenerateRecursiveBacktracking}
             disabled={controlsDisabled}
-            className="btn btn-maze"
+            className="control-button control-button-outline"
           >
             Recursive Backtracking
           </button>
@@ -110,38 +129,47 @@ export function ControlPanel({
           <button
             onClick={onGeneratePrimsMaze}
             disabled={controlsDisabled}
-            className="btn btn-maze"
+            className="control-button control-button-outline"
           >
             Prim's Maze
           </button>
         </div>
-      </div>
+      </section>
 
       {/* Analysis */}
-      <div className="control-section">
-        <h2 className="control-section-title">
+      <section className="control-section">
+        <span className="control-section-label">
           Analysis
-        </h2>
+        </span>
 
-        <div className="control-group">
-          <button
-            onClick={onCompareAlgorithms}
-            disabled={controlsDisabled}
-            className="btn btn-compare"
-          >
-            Compare Algorithms
-          </button>
+        <button
+          onClick={onCompareAlgorithms}
+          disabled={controlsDisabled}
+          className="control-button control-button-analysis"
+        >
+          Compare Algorithms
+          <span className="button-arrow">
+            →
+          </span>
+        </button>
+      </section>
+
+      {/* Speed */}
+      <section className="control-section speed-section">
+        <div className="speed-header">
+          <span className="control-section-label">
+            Animation Speed
+          </span>
+
+          <span className="speed-value">
+            {animationSpeed}/10
+          </span>
         </div>
-      </div>
-
-      {/* Animation Speed */}
-      <div className="control-section speed-section">
-        <h2 className="control-section-title">
-          Animation Speed
-        </h2>
 
         <div className="speed-control">
-          <span className="speed-label">Slow</span>
+          <span className="speed-label">
+            Slow
+          </span>
 
           <input
             type="range"
@@ -149,45 +177,42 @@ export function ControlPanel({
             max="10"
             value={animationSpeed}
             onChange={(e) =>
-              onSpeedChange(Number(e.target.value))
+              onSpeedChange(
+                Number(e.target.value)
+              )
             }
             className="speed-slider"
           />
 
-          <span className="speed-label">Fast</span>
-        </div>
-
-        <span className="speed-value">
-          {animationSpeed}/10
-        </span>
-      </div>
-
-      {/* Status */}
-      <div className="control-section status-section">
-        <div className="status-indicator">
-          <span
-            className={`status-dot ${
-              isReady
-                ? 'status-ready'
-                : 'status-active'
-            }`}
-          />
-
-          <span className="status-message">
-            {statusMessage}
+          <span className="speed-label">
+            Fast
           </span>
         </div>
-      </div>
+      </section>
+
+      {/* Status */}
+      <section className="control-status">
+        <span
+          className={`status-dot ${
+            isReady
+              ? 'status-ready'
+              : 'status-active'
+          }`}
+        />
+
+        <span className="status-message">
+          {statusMessage}
+        </span>
+      </section>
 
       {/* Reset */}
-      <div className="control-section control-section-actions">
-        <button
-          onClick={onReset}
-          className="btn btn-secondary"
-        >
-          Reset
-        </button>
-      </div>
-    </div>
+      <button
+        onClick={onReset}
+        className="reset-button"
+      >
+        <span>↻</span>
+        Reset Visualizer
+      </button>
+    </aside>
   );
 }

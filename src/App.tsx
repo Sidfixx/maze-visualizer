@@ -1,3 +1,4 @@
+import './App.css';
 import { useState } from 'react';
 
 import { StatsPanel } from './components/Stats/StatsPanel';
@@ -114,10 +115,6 @@ function App() {
     .flat()
     .find((node) => node.isEnd)!;
 
-  /*
-   * The grid should not be editable while an algorithm
-   * or comparison is running.
-   */
   const interactionDisabled =
     isRunning ||
     isAnimating ||
@@ -165,7 +162,7 @@ function App() {
   }
 
   // ==========================================
-  // ALGORITHM COMPARISON
+  // COMPARISON
   // ==========================================
 
   function handleCompareAlgorithms() {
@@ -244,31 +241,24 @@ function App() {
     row: number,
     col: number
   ) {
-    /*
-     * Do not allow grid editing while an algorithm
-     * or comparison is being visualized.
-     */
     if (interactionDisabled) {
       return;
     }
 
     const node = grid[row][col];
 
-    // Start node
     if (node.isStart) {
       setDraggingNode('start');
       setMouseIsPressed(true);
       return;
     }
 
-    // End node
     if (node.isEnd) {
       setDraggingNode('end');
       setMouseIsPressed(true);
       return;
     }
 
-    // Wall drawing / erasing
     if (node.isWall) {
       setWallMode('erase');
     } else {
@@ -310,7 +300,6 @@ function App() {
 
     const node = grid[row][col];
 
-    // Drag Start
     if (draggingNode === 'start') {
       if (node.isEnd || node.isWall) {
         return;
@@ -345,7 +334,6 @@ function App() {
       return;
     }
 
-    // Drag End
     if (draggingNode === 'end') {
       if (node.isStart || node.isWall) {
         return;
@@ -380,7 +368,6 @@ function App() {
       return;
     }
 
-    // Draw / erase walls
     if (wallMode) {
       if (node.isStart || node.isEnd) {
         return;
@@ -459,71 +446,129 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Pathfinding Visualizer</h1>
+      {/* Header */}
+      <header className="app-header">
+        <div>
+          <span className="app-eyebrow">
+            ALGORITHM LAB
+          </span>
 
-      <ControlPanel
-        onVisualizeBFS={handleVisualizeBFS}
-        onVisualizeDFS={handleVisualizeDFS}
-        onVisualizeDijkstra={
-          handleVisualizeDijkstra
-        }
-        onVisualizeAStar={handleVisualizeAStar}
-        onReset={handleReset}
-        onGenerateRandomMaze={
-          handleGenerateRandomMaze
-        }
-        onGenerateRecursiveBacktracking={
-          handleGenerateRecursiveBacktracking
-        }
-        onGeneratePrimsMaze={
-          handleGeneratePrimsMaze
-        }
-        onCompareAlgorithms={
-          handleCompareAlgorithms
-        }
-        isRunning={isRunning}
-        isAnimating={isAnimating}
-        isComparing={isComparing}
-        animationSpeed={animationSpeed}
-        onSpeedChange={setAnimationSpeed}
-        statusMessage={statusMessage}
-      />
+          <h1>Pathfinding Visualizer</h1>
 
-      <Grid
-        grid={grid}
-        onMouseDown={handleMouseDown}
-        onMouseEnter={handleMouseEnter}
-        onMouseUp={handleMouseUp}
-        onRightClick={handleRightClick}
-        visitedNodeIndices={
-          visitedNodeIndices
-        }
-        pathNodeIndices={
-          pathNodeIndices
-        }
-      />
+          <p className="app-subtitle">
+            Explore, visualize and compare
+            pathfinding algorithms.
+          </p>
+        </div>
 
-      <Legend />
+        <div className="header-status">
+          <span
+            className={`header-status-dot ${
+              statusMessage === 'Ready'
+                ? 'header-status-ready'
+                : 'header-status-active'
+            }`}
+          />
 
-      <AlgorithmInfoPanel />
+          <span>{statusMessage}</span>
+        </div>
+      </header>
 
+      {/* Main workspace */}
+      <main className="visualizer-workspace">
+        {/* Grid */}
+        <section className="grid-card">
+          <div className="grid-card-header">
+            <div>
+              <span className="card-eyebrow">
+                VISUALIZER
+              </span>
+
+              <h2>Pathfinding Grid</h2>
+            </div>
+
+            <span className="grid-size">
+              {NUM_ROWS} × {NUM_COLS}
+            </span>
+          </div>
+
+          <div className="grid-wrapper">
+            <Grid
+              grid={grid}
+              onMouseDown={handleMouseDown}
+              onMouseEnter={handleMouseEnter}
+              onMouseUp={handleMouseUp}
+              onRightClick={handleRightClick}
+              visitedNodeIndices={
+                visitedNodeIndices
+              }
+              pathNodeIndices={
+                pathNodeIndices
+              }
+            />
+          </div>
+
+          <Legend />
+        </section>
+
+        {/* Controls */}
+        <ControlPanel
+          onVisualizeBFS={handleVisualizeBFS}
+          onVisualizeDFS={handleVisualizeDFS}
+          onVisualizeDijkstra={
+            handleVisualizeDijkstra
+          }
+          onVisualizeAStar={handleVisualizeAStar}
+          onReset={handleReset}
+          onGenerateRandomMaze={
+            handleGenerateRandomMaze
+          }
+          onGenerateRecursiveBacktracking={
+            handleGenerateRecursiveBacktracking
+          }
+          onGeneratePrimsMaze={
+            handleGeneratePrimsMaze
+          }
+          onCompareAlgorithms={
+            handleCompareAlgorithms
+          }
+          isRunning={isRunning}
+          isAnimating={isAnimating}
+          isComparing={isComparing}
+          animationSpeed={animationSpeed}
+          onSpeedChange={setAnimationSpeed}
+          statusMessage={statusMessage}
+        />
+      </main>
+
+      {/* Algorithm Information */}
+      <section className="secondary-section">
+        <AlgorithmInfoPanel />
+      </section>
+
+      {/* Statistics */}
       {!isComparisonPlayback &&
         result &&
         !isAnimating && (
-          <StatsPanel stats={result.stats} />
+          <section className="secondary-section">
+            <StatsPanel stats={result.stats} />
+          </section>
         )}
 
+      {/* Comparison */}
       {comparisonComplete && (
-        <ComparisonPanel
-          results={comparisonResults}
-          onClear={() => {
-            clearComparison();
-            setIsComparisonPlayback(false);
-            setComparisonIndex(0);
-            setComparisonComplete(false);
-            setStatusMessage('Ready');
-          }}
-        />
+        <section className="secondary-section">
+          <ComparisonPanel
+            results={comparisonResults}
+            onClear={() => {
+              clearComparison();
+              setIsComparisonPlayback(false);
+              setComparisonIndex(0);
+              setComparisonComplete(false);
+              setStatusMessage('Ready');
+            }}
+          />
+        </section>
       )}
     </div>
   );

@@ -1,0 +1,240 @@
+.app {
+  width: min(1380px, calc(100% - 48px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 34px 0 70px;
+}
+
+/* ================================= */
+/* Header                            */
+/* ================================= */
+
+.app-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.app-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.app-header h1 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.app-subtitle {
+  margin-top: 11px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.header-status-ready {
+  background: var(--success);
+}
+
+.header-status-active {
+  background: var(--warning);
+  animation: headerStatusPulse 1s ease-in-out infinite;
+}
+
+@keyframes headerStatusPulse {
+  0% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
+}
+
+/* ================================= */
+/* Main workspace                    */
+/* ================================= */
+
+.visualizer-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* ================================= */
+/* Grid Card                         */
+/* ================================= */
+
+.grid-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.grid-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.card-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.grid-card-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.grid-size {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* ================================= */
+/* Grid wrapper                      */
+/* ================================= */
+
+.grid-wrapper {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fbfcff;
+}
+
+/*
+ * The existing Grid component has its own grid
+ * dimensions. This wrapper gives it breathing room
+ * without changing the algorithm/grid logic.
+ */
+.grid-wrapper > * {
+  max-width: 100%;
+}
+
+/* ================================= */
+/* Secondary sections                */
+/* ================================= */
+
+.secondary-section {
+  margin-top: 20px;
+}
+
+.secondary-section > .algorithm-info-panel,
+.secondary-section > .stats-panel,
+.secondary-section > .comparison-panel {
+  margin-top: 0;
+}
+
+/* ================================= */
+/* Responsive                        */
+/* ================================= */
+
+@media (max-width: 1050px) {
+  .visualizer-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .visualizer-workspace .control-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .app {
+    width: calc(100% - 24px);
+    padding: 22px 0 45px;
+  }
+
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .app-header h1 {
+    font-size: 34px;
+    letter-spacing: -1.3px;
+  }
+
+  .grid-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .grid-card-header {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 450px) {
+  .app {
+    width: calc(100% - 16px);
+  }
+
+  .app-header h1 {
+    font-size: 29px;
+  }
+
+  .grid-size {
+    display: none;
+  }
+}

@@ -1,53 +1,130 @@
+/* ========================================= */
+/* STATISTICS                                */
+/* ========================================= */
+
 .stats-panel {
-  margin-top: 20px;
-  padding: 18px 20px;
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 10px;
+  width: 100%;
+
+  margin: 0;
+  padding: 24px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow-md);
+
   box-sizing: border-box;
 }
 
+/* ========================================= */
+/* TITLE                                     */
+/* ========================================= */
+
 .stats-title {
-  margin: 0 0 16px 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+  margin: 0 0 16px;
+
+  color: var(--text-primary);
+
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
 }
+
+/* ========================================= */
+/* STATS GRID                                */
+/* ========================================= */
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
 }
+
+/* ========================================= */
+/* STAT CARD                                 */
+/* ========================================= */
 
 .stat-item {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 14px;
-  background-color: #252525;
-  border: 1px solid #333;
-  border-radius: 7px;
+
+  gap: 7px;
+
+  padding: 16px;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background: var(--surface-soft);
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
+
+.stat-item:hover {
+  border-color: var(--primary-border);
+
+  transform: translateY(-1px);
+
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========================================= */
+/* LABEL                                     */
+/* ========================================= */
 
 .stat-label {
-  font-size: 11px;
-  color: #888;
+  color: var(--text-muted);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.7px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
+
+/* ========================================= */
+/* VALUE                                     */
+/* ========================================= */
 
 .stat-value {
+  color: var(--primary);
+
   font-size: 18px;
-  font-weight: 600;
-  color: #378add;
+  font-weight: 750;
+
+  line-height: 1.25;
+
+  word-break: break-word;
 }
 
-/* Responsive layout */
+/* ========================================= */
+/* RESPONSIVE                                */
+/* ========================================= */
+
+@media (max-width: 850px) {
+  .stats-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
 
 @media (max-width: 600px) {
+  .stats-panel {
+    padding: 16px;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
