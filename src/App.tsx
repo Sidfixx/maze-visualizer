@@ -114,6 +114,16 @@ function App() {
     .flat()
     .find((node) => node.isEnd)!;
 
+  /*
+   * The grid should not be editable while an algorithm
+   * or comparison is running.
+   */
+  const interactionDisabled =
+    isRunning ||
+    isAnimating ||
+    isComparing ||
+    isComparisonPlayback;
+
   // ==========================================
   // PATHFINDING
   // ==========================================
@@ -234,6 +244,14 @@ function App() {
     row: number,
     col: number
   ) {
+    /*
+     * Do not allow grid editing while an algorithm
+     * or comparison is being visualized.
+     */
+    if (interactionDisabled) {
+      return;
+    }
+
     const node = grid[row][col];
 
     // Start node
@@ -282,6 +300,10 @@ function App() {
     row: number,
     col: number
   ) {
+    if (interactionDisabled) {
+      return;
+    }
+
     if (!mouseIsPressed) {
       return;
     }
@@ -395,6 +417,10 @@ function App() {
     row: number,
     col: number
   ) {
+    if (interactionDisabled) {
+      return;
+    }
+
     const node = grid[row][col];
 
     if (
