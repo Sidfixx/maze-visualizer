@@ -487,7 +487,7 @@ function App() {
       <header className="app-header">
         <div>
           <span className="app-eyebrow">
-            ALGORITHM LAB
+            Sidfixx
           </span>
 
           <h1>
