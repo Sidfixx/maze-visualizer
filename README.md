@@ -1,10 +1,9 @@
 # Pathfinding Visualizer
 
-An interactive pathfinding and maze generation visualizer built with React and TypeScript.
+> Interactive pathfinding and maze generation visualizer built with React and TypeScript.
 
-Explore how different pathfinding algorithms navigate a grid, experiment with walls and weighted nodes, generate mazes, and compare algorithm performance.
+**🚀 [Live Demo](https://maze-visualizer-pi.vercel.app/)**
 
----
 
 ## 🚀 Features
 
