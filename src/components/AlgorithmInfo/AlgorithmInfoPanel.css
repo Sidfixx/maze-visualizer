@@ -17,7 +17,7 @@
 }
 
 /* ========================================= */
-/* TITLE                                     */
+/* HEADER                                    */
 /* ========================================= */
 
 .algorithm-info-title {
@@ -28,6 +28,7 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
 .algorithm-selector-label {
@@ -35,11 +36,11 @@
 
   color: var(--text-muted);
 
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
 
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.8px;
 }
 
 /* ========================================= */
@@ -54,10 +55,18 @@
   margin-bottom: 16px;
 
   overflow-x: auto;
+
+  scrollbar-width: none;
+}
+
+.algorithm-selector::-webkit-scrollbar {
+  display: none;
 }
 
 .algorithm-info-button {
   flex-shrink: 0;
+
+  min-height: 34px;
 
   padding: 8px 14px;
 
@@ -68,23 +77,27 @@
 
   color: var(--text-secondary);
 
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 650;
 
   cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
 
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease,
     color 0.15s ease,
-    transform 0.15s ease;
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .algorithm-info-button:hover {
-  border-color: var(--primary);
+  border-color: rgba(23, 105, 255, 0.35);
 
-  background: var(--primary-soft);
+  background: var(--primary-light);
 
   color: var(--primary);
 
@@ -96,10 +109,15 @@
 
   background: var(--primary);
 
-  color: white;
+  color: #ffffff;
 
   box-shadow:
-    0 4px 10px rgba(23, 105, 255, 0.16);
+    0 5px 12px rgba(23, 105, 255, 0.18);
+}
+
+.algorithm-info-button:focus-visible {
+  outline: 2px solid rgba(23, 105, 255, 0.35);
+  outline-offset: 2px;
 }
 
 /* ========================================= */
@@ -110,7 +128,7 @@
   padding: 22px;
 
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 13px;
 
   background: var(--surface-soft);
 
@@ -125,9 +143,12 @@
   font-size: 21px;
   font-weight: 700;
   line-height: 1.25;
+  letter-spacing: -0.25px;
 }
 
 .algorithm-description {
+  max-width: 900px;
+
   margin: 0;
 
   color: var(--text-secondary);
@@ -142,7 +163,7 @@
 
 .algorithm-how-it-works {
   margin-top: 18px;
-  padding: 16px 18px;
+  padding: 15px 17px;
 
   border-left: 3px solid var(--primary);
   border-radius: 8px;
@@ -159,7 +180,7 @@
 
   color: var(--text-primary);
 
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
 
   letter-spacing: 0.8px;
@@ -193,7 +214,9 @@
 .algorithm-detail {
   min-width: 0;
 
-  padding: 14px;
+  min-height: 64px;
+
+  padding: 13px;
 
   border: 1px solid var(--border);
   border-radius: 9px;
@@ -210,7 +233,7 @@
 
   color: var(--text-muted);
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 
   letter-spacing: 0.7px;
@@ -222,7 +245,7 @@
 
   color: var(--primary);
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 
   line-height: 1.35;
@@ -238,14 +261,14 @@
   margin: 14px 0 0;
   padding: 11px 13px;
 
-  border: 1px solid var(--border);
+  border: 1px solid #dce6f7;
   border-radius: 8px;
 
-  background: #f4f7fc;
+  background: #f1f6ff;
 
-  color: var(--text-muted);
+  color: var(--text-secondary);
 
-  font-size: 10px;
+  font-size: 9px;
   line-height: 1.6;
 }
 
