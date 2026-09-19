@@ -1,4 +1,10 @@
+import { useState } from 'react';
 import './ControlPanel.css';
+
+import {
+  enableAudio,
+  disableAudio,
+} from '../../utils/soundEffects';
 
 interface ControlPanelProps {
   onVisualizeBFS: () => void;
@@ -38,10 +44,26 @@ export function ControlPanel({
   onSpeedChange,
   statusMessage,
 }: ControlPanelProps) {
-  const controlsDisabled =
-    isRunning || isAnimating || isComparing;
+  const [soundEnabled, setSoundEnabled] =
+    useState(false);
 
-  const isReady = statusMessage === 'Ready';
+  const controlsDisabled =
+    isRunning ||
+    isAnimating ||
+    isComparing;
+
+  const isReady =
+    statusMessage === 'Ready';
+
+  function handleSoundToggle() {
+    if (soundEnabled) {
+      disableAudio();
+      setSoundEnabled(false);
+    } else {
+      enableAudio();
+      setSoundEnabled(true);
+    }
+  }
 
   return (
     <aside className="control-panel">
@@ -119,7 +141,9 @@ export function ControlPanel({
           </button>
 
           <button
-            onClick={onGenerateRecursiveBacktracking}
+            onClick={
+              onGenerateRecursiveBacktracking
+            }
             disabled={controlsDisabled}
             className="control-button control-button-outline"
           >
@@ -148,6 +172,7 @@ export function ControlPanel({
           className="control-button control-button-analysis"
         >
           Compare Algorithms
+
           <span className="button-arrow">
             →
           </span>
@@ -188,6 +213,32 @@ export function ControlPanel({
             Fast
           </span>
         </div>
+      </section>
+
+      {/* Sound */}
+      <section className="control-section">
+        <span className="control-section-label">
+          Audio
+        </span>
+
+        <button
+          onClick={handleSoundToggle}
+          className={`sound-button ${
+            soundEnabled
+              ? 'sound-button-on'
+              : 'sound-button-off'
+          }`}
+        >
+          <span>
+            {soundEnabled
+              ? '🔊'
+              : '🔇'}
+          </span>
+
+          {soundEnabled
+            ? 'Sound ON'
+            : 'Sound OFF'}
+        </button>
       </section>
 
       {/* Status */}

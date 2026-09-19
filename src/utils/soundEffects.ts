@@ -1,5 +1,7 @@
 let audioContext: AudioContext | null = null;
 
+let soundEnabled = false;
+
 let searchOscillator: OscillatorNode | null = null;
 let searchGain: GainNode | null = null;
 
@@ -9,23 +11,54 @@ let pathGain: GainNode | null = null;
 let searchPulseInterval: ReturnType<typeof setInterval> | null = null;
 let pathPulseInterval: ReturnType<typeof setInterval> | null = null;
 
+/* =====================================================
+   AUDIO CONTEXT
+===================================================== */
+
 function getAudioContext(): AudioContext {
   if (!audioContext) {
     audioContext = new AudioContext();
   }
 
   if (audioContext.state === 'suspended') {
-    audioContext.resume();
+    void audioContext.resume();
   }
 
   return audioContext;
 }
 
 /* =====================================================
+   SOUND ON / OFF
+===================================================== */
+
+export function enableAudio(): void {
+  soundEnabled = true;
+
+  const context = getAudioContext();
+
+  if (context.state === 'suspended') {
+    void context.resume();
+  }
+}
+
+export function disableAudio(): void {
+  soundEnabled = false;
+  stopAllSounds();
+}
+
+export function isSoundEnabled(): boolean {
+  return soundEnabled;
+}
+
+/* =====================================================
    SEARCH / ZOOM SOUND
 ===================================================== */
 
-export function startSearchSound(speed: number = 1): void {
+export function startSearchSound(
+  speed: number = 1
+): void {
+  if (!soundEnabled) return;
+
   stopSearchSound();
 
   const context = getAudioContext();
@@ -35,9 +68,11 @@ export function startSearchSound(speed: number = 1): void {
 
   searchOscillator.type = 'sawtooth';
 
-  // Faster animation = slightly higher pitch
-  const baseFrequency = 120 + speed * 12;
-  const endFrequency = 420 + speed * 20;
+  const baseFrequency =
+    120 + speed * 12;
+
+  const endFrequency =
+    420 + speed * 20;
 
   searchOscillator.frequency.setValueAtTime(
     baseFrequency,
@@ -54,7 +89,6 @@ export function startSearchSound(speed: number = 1): void {
     context.currentTime
   );
 
-  // LOUD SEARCH SOUND
   searchGain.gain.linearRampToValueAtTime(
     0.65,
     context.currentTime + 0.12
@@ -65,13 +99,6 @@ export function startSearchSound(speed: number = 1): void {
 
   searchOscillator.start();
 
-  /*
-   * Faster animation = faster sound pulses.
-   *
-   * Speed 1  → 180ms
-   * Speed 5  → 36ms
-   * Speed 10 → 18ms
-   */
   const pulseInterval = Math.max(
     18,
     180 / speed
@@ -82,11 +109,18 @@ export function startSearchSound(speed: number = 1): void {
   }, pulseInterval);
 }
 
-function playSearchPulse(speed: number): void {
+function playSearchPulse(
+  speed: number
+): void {
+  if (!soundEnabled) return;
+
   const context = getAudioContext();
 
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
+  const oscillator =
+    context.createOscillator();
+
+  const gain =
+    context.createGain();
 
   oscillator.type = 'square';
 
@@ -102,7 +136,8 @@ function playSearchPulse(speed: number): void {
 
   oscillator.frequency.exponentialRampToValueAtTime(
     frequency * 2,
-    context.currentTime + 0.08 / speed
+    context.currentTime +
+      0.08 / speed
   );
 
   gain.gain.setValueAtTime(
@@ -117,7 +152,8 @@ function playSearchPulse(speed: number): void {
 
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
-    context.currentTime + 0.13 / speed
+    context.currentTime +
+      0.13 / speed
   );
 
   oscillator.connect(gain);
@@ -127,7 +163,10 @@ function playSearchPulse(speed: number): void {
 
   oscillator.stop(
     context.currentTime +
-      Math.max(0.05, 0.14 / speed)
+      Math.max(
+        0.05,
+        0.14 / speed
+      )
   );
 }
 
@@ -142,9 +181,12 @@ export function stopSearchSound(): void {
     searchGain &&
     audioContext
   ) {
-    const now = audioContext.currentTime;
+    const now =
+      audioContext.currentTime;
 
-    searchGain.gain.cancelScheduledValues(now);
+    searchGain.gain.cancelScheduledValues(
+      now
+    );
 
     searchGain.gain.setValueAtTime(
       searchGain.gain.value,
@@ -156,7 +198,13 @@ export function stopSearchSound(): void {
       now + 0.2
     );
 
-    searchOscillator.stop(now + 0.2);
+    try {
+      searchOscillator.stop(
+        now + 0.2
+      );
+    } catch {
+      // Oscillator may already be stopped.
+    }
   }
 
   searchOscillator = null;
@@ -164,12 +212,14 @@ export function stopSearchSound(): void {
 }
 
 /* =====================================================
-   PATH FOUND — LOUD DOUBLE BLINK
+   PATH FOUND
 ===================================================== */
 
 export function playPathFoundSound(
   speed: number = 1
 ): void {
+  if (!soundEnabled) return;
+
   const context = getAudioContext();
 
   const pitchMultiplier =
@@ -177,8 +227,11 @@ export function playPathFoundSound(
 
   /* FIRST BLINK */
 
-  const oscillator1 = context.createOscillator();
-  const gain1 = context.createGain();
+  const oscillator1 =
+    context.createOscillator();
+
+  const gain1 =
+    context.createGain();
 
   oscillator1.type = 'square';
 
@@ -189,7 +242,8 @@ export function playPathFoundSound(
 
   oscillator1.frequency.exponentialRampToValueAtTime(
     1100 * pitchMultiplier,
-    context.currentTime + 0.12 / speed
+    context.currentTime +
+      0.12 / speed
   );
 
   gain1.gain.setValueAtTime(
@@ -204,7 +258,8 @@ export function playPathFoundSound(
 
   gain1.gain.exponentialRampToValueAtTime(
     0.0001,
-    context.currentTime + 0.18 / speed
+    context.currentTime +
+      0.18 / speed
   );
 
   oscillator1.connect(gain1);
@@ -214,51 +269,66 @@ export function playPathFoundSound(
 
   oscillator1.stop(
     context.currentTime +
-      Math.max(0.1, 0.2 / speed)
+      Math.max(
+        0.1,
+        0.2 / speed
+      )
   );
 
   /* SECOND BLINK */
 
-  const oscillator2 = context.createOscillator();
-  const gain2 = context.createGain();
+  const oscillator2 =
+    context.createOscillator();
+
+  const gain2 =
+    context.createGain();
 
   oscillator2.type = 'square';
 
   oscillator2.frequency.setValueAtTime(
     900 * pitchMultiplier,
-    context.currentTime + 0.08 / speed
+    context.currentTime +
+      0.08 / speed
   );
 
   oscillator2.frequency.exponentialRampToValueAtTime(
     1600 * pitchMultiplier,
-    context.currentTime + 0.2 / speed
+    context.currentTime +
+      0.2 / speed
   );
 
   gain2.gain.setValueAtTime(
     0.0001,
-    context.currentTime + 0.07 / speed
+    context.currentTime +
+      0.07 / speed
   );
 
   gain2.gain.exponentialRampToValueAtTime(
     0.75,
-    context.currentTime + 0.09 / speed
+    context.currentTime +
+      0.09 / speed
   );
 
   gain2.gain.exponentialRampToValueAtTime(
     0.0001,
-    context.currentTime + 0.3 / speed
+    context.currentTime +
+      0.3 / speed
   );
 
   oscillator2.connect(gain2);
   gain2.connect(context.destination);
 
   oscillator2.start(
-    context.currentTime + 0.07 / speed
+    context.currentTime +
+      0.07 / speed
   );
 
   oscillator2.stop(
     context.currentTime +
-      Math.max(0.15, 0.32 / speed)
+      Math.max(
+        0.15,
+        0.32 / speed
+      )
   );
 }
 
@@ -269,12 +339,17 @@ export function playPathFoundSound(
 export function startPathTravelSound(
   speed: number = 1
 ): void {
+  if (!soundEnabled) return;
+
   stopPathTravelSound();
 
   const context = getAudioContext();
 
-  pathOscillator = context.createOscillator();
-  pathGain = context.createGain();
+  pathOscillator =
+    context.createOscillator();
+
+  pathGain =
+    context.createGain();
 
   pathOscillator.type = 'sawtooth';
 
@@ -291,7 +366,8 @@ export function startPathTravelSound(
 
   pathOscillator.frequency.linearRampToValueAtTime(
     endFrequency,
-    context.currentTime + 1 / speed
+    context.currentTime +
+      1 / speed
   );
 
   pathGain.gain.setValueAtTime(
@@ -299,7 +375,6 @@ export function startPathTravelSound(
     context.currentTime
   );
 
-  // LOUD PATH SOUND
   pathGain.gain.linearRampToValueAtTime(
     0.60,
     context.currentTime + 0.12
@@ -310,9 +385,6 @@ export function startPathTravelSound(
 
   pathOscillator.start();
 
-  /*
-   * Faster animation = faster travel pulses.
-   */
   const pulseInterval = Math.max(
     14,
     140 / speed
@@ -323,11 +395,18 @@ export function startPathTravelSound(
   }, pulseInterval);
 }
 
-function playPathPulse(speed: number): void {
+function playPathPulse(
+  speed: number
+): void {
+  if (!soundEnabled) return;
+
   const context = getAudioContext();
 
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
+  const oscillator =
+    context.createOscillator();
+
+  const gain =
+    context.createGain();
 
   oscillator.type = 'square';
 
@@ -343,7 +422,8 @@ function playPathPulse(speed: number): void {
 
   oscillator.frequency.exponentialRampToValueAtTime(
     frequency * 1.5,
-    context.currentTime + 0.09 / speed
+    context.currentTime +
+      0.09 / speed
   );
 
   gain.gain.setValueAtTime(
@@ -351,7 +431,6 @@ function playPathPulse(speed: number): void {
     context.currentTime
   );
 
-  // LOUD PATH PULSE
   gain.gain.exponentialRampToValueAtTime(
     0.65,
     context.currentTime + 0.015
@@ -359,7 +438,8 @@ function playPathPulse(speed: number): void {
 
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
-    context.currentTime + 0.12 / speed
+    context.currentTime +
+      0.12 / speed
   );
 
   oscillator.connect(gain);
@@ -369,7 +449,10 @@ function playPathPulse(speed: number): void {
 
   oscillator.stop(
     context.currentTime +
-      Math.max(0.04, 0.13 / speed)
+      Math.max(
+        0.04,
+        0.13 / speed
+      )
   );
 }
 
@@ -384,9 +467,12 @@ export function stopPathTravelSound(): void {
     pathGain &&
     audioContext
   ) {
-    const now = audioContext.currentTime;
+    const now =
+      audioContext.currentTime;
 
-    pathGain.gain.cancelScheduledValues(now);
+    pathGain.gain.cancelScheduledValues(
+      now
+    );
 
     pathGain.gain.setValueAtTime(
       pathGain.gain.value,
@@ -398,7 +484,13 @@ export function stopPathTravelSound(): void {
       now + 0.2
     );
 
-    pathOscillator.stop(now + 0.2);
+    try {
+      pathOscillator.stop(
+        now + 0.2
+      );
+    } catch {
+      // Oscillator may already be stopped.
+    }
   }
 
   pathOscillator = null;
@@ -412,13 +504,18 @@ export function stopPathTravelSound(): void {
 export function playDestinationSound(
   speed: number = 1
 ): void {
+  if (!soundEnabled) return;
+
   const context = getAudioContext();
 
   const pitchMultiplier =
     1 + speed * 0.025;
 
-  const oscillator = context.createOscillator();
-  const gain = context.createGain();
+  const oscillator =
+    context.createOscillator();
+
+  const gain =
+    context.createGain();
 
   oscillator.type = 'square';
 
@@ -429,12 +526,14 @@ export function playDestinationSound(
 
   oscillator.frequency.exponentialRampToValueAtTime(
     1200 * pitchMultiplier,
-    context.currentTime + 0.15 / speed
+    context.currentTime +
+      0.15 / speed
   );
 
   oscillator.frequency.exponentialRampToValueAtTime(
     1800 * pitchMultiplier,
-    context.currentTime + 0.3 / speed
+    context.currentTime +
+      0.3 / speed
   );
 
   gain.gain.setValueAtTime(
@@ -442,7 +541,6 @@ export function playDestinationSound(
     context.currentTime
   );
 
-  // VERY LOUD FINAL SOUND
   gain.gain.exponentialRampToValueAtTime(
     0.90,
     context.currentTime + 0.02
@@ -450,7 +548,8 @@ export function playDestinationSound(
 
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
-    context.currentTime + 0.38 / speed
+    context.currentTime +
+      0.38 / speed
   );
 
   oscillator.connect(gain);
@@ -460,7 +559,10 @@ export function playDestinationSound(
 
   oscillator.stop(
     context.currentTime +
-      Math.max(0.15, 0.4 / speed)
+      Math.max(
+        0.15,
+        0.4 / speed
+      )
   );
 }
 
