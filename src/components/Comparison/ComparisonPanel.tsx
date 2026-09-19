@@ -14,6 +14,14 @@ export function ComparisonPanel({
     return null;
   }
 
+  // Sort only for display.
+  // This does NOT change the order in which algorithms were animated.
+  const sortedResults = [...results].sort(
+    (a, b) =>
+      (a.stats?.executionTime ?? Infinity) -
+      (b.stats?.executionTime ?? Infinity)
+  );
+
   return (
     <div className="comparison-panel">
       <div className="comparison-header">
@@ -41,7 +49,7 @@ export function ComparisonPanel({
           </thead>
 
           <tbody>
-            {results.map((result) => (
+            {sortedResults.map((result) => (
               <tr key={result.stats?.algorithm}>
                 <td className="comparison-algorithm">
                   {result.stats?.algorithm}
