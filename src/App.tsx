@@ -1,3 +1,4 @@
+import { AlgorithmInfoPanel } from './components/AlgorithmInfo/AlgorithmInfoPanel';
 import { useState } from 'react';
 import { StatsPanel } from './components/Stats/StatsPanel';
 import { ComparisonPanel } from './components/Comparison/ComparisonPanel';
@@ -334,6 +335,7 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
         visitedNodeIndices={visitedNodeIndices}
         pathNodeIndices={pathNodeIndices}
       />
+      <AlgorithmInfoPanel />
 
       {!isComparisonPlayback &&
         result &&
