@@ -1,6 +1,15 @@
 import { useState, useLayoutEffect, useRef } from 'react';
 import type { AlgorithmResult } from '../types';
 
+import {
+  startSearchSound,
+  stopSearchSound,
+  playPathFoundSound,
+  startPathTravelSound,
+  stopPathTravelSound,
+  stopAllSounds,
+} from '../utils/soundEffects';
+
 export function useAnimationPlayer(
   result: AlgorithmResult | null,
   speed: number = 1,
@@ -42,19 +51,22 @@ export function useAnimationPlayer(
         clearInterval(pathIntervalRef.current);
       }
 
+      stopAllSounds();
+
       return;
     }
 
-    /*
-     * Store the non-null result locally.
-     * This prevents TypeScript from thinking result
-     * might become null inside the nested function.
-     */
     const currentResult = result;
 
     setIsAnimating(true);
     setVisitedNodeIndices(new Set());
     setPathNodeIndices(new Set());
+
+    /*
+     * PHASE 1
+     * Algorithm explores the grid.
+     */
+    startSearchSound();
 
     let visitedIndex = 0;
 
@@ -78,14 +90,40 @@ export function useAnimationPlayer(
       } else {
         clearInterval(visitedInterval);
 
-        animatePath();
+        /*
+         * Search is complete.
+         */
+        stopSearchSound();
+
+        /*
+         * Play the short "path found" blink.
+         */
+        if (currentResult.shortestPath.length > 0) {
+          playPathFoundSound();
+        }
+
+        /*
+         * Start the path travel sound slightly
+         * after the path-found sound.
+         */
+        setTimeout(() => {
+          animatePath();
+        }, 150);
       }
     }, 10 / speed);
 
     visitedIntervalRef.current = visitedInterval;
 
+    /*
+     * PHASE 2
+     * Animate the shortest path.
+     */
     function animatePath() {
       let pathIndex = 0;
+
+      if (currentResult.shortestPath.length > 0) {
+        startPathTravelSound();
+      }
 
       const pathInterval = setInterval(() => {
         if (
@@ -107,6 +145,8 @@ export function useAnimationPlayer(
         } else {
           clearInterval(pathInterval);
 
+          stopPathTravelSound();
+
           setIsAnimating(false);
 
           completionCallbackRef.current?.();
@@ -124,6 +164,8 @@ export function useAnimationPlayer(
       if (pathIntervalRef.current) {
         clearInterval(pathIntervalRef.current);
       }
+
+      stopAllSounds();
     };
   }, [result, speed]);
 
