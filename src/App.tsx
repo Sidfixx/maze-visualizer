@@ -220,18 +220,38 @@ function App() {
   // ==========================================
 
   function handleReset() {
-    reset(grid);
-    clearComparison();
+  // Create a completely clean grid while preserving
+  // the current Start and End positions.
+  const cleanGrid = grid.map((row) =>
+    row.map((node) => ({
+      ...node,
+      isWall: false,
+      weight: 1,
+      isVisited: false,
+      previousNode: null,
+      distance: Infinity,
+    }))
+  );
 
-    setIsComparisonPlayback(false);
-    setComparisonIndex(0);
-    setComparisonComplete(false);
-    setStatusMessage('Ready');
+  setGrid(cleanGrid);
 
-    setDraggingNode(null);
-    setMouseIsPressed(false);
-    setWallMode(null);
-  }
+  // Clear algorithm results and comparison results.
+  reset(cleanGrid);
+  clearComparison();
+
+  // Reset comparison state.
+  setIsComparisonPlayback(false);
+  setComparisonIndex(0);
+  setComparisonComplete(false);
+
+  // Reset UI status.
+  setStatusMessage('Ready');
+
+  // Reset mouse interaction state.
+  setDraggingNode(null);
+  setMouseIsPressed(false);
+  setWallMode(null);
+}
 
   // ==========================================
   // GRID INTERACTION
@@ -300,6 +320,10 @@ function App() {
 
     const node = grid[row][col];
 
+    // ------------------------------------------
+    // DRAG START NODE
+    // ------------------------------------------
+
     if (draggingNode === 'start') {
       if (node.isEnd || node.isWall) {
         return;
@@ -333,6 +357,10 @@ function App() {
 
       return;
     }
+
+    // ------------------------------------------
+    // DRAG END NODE
+    // ------------------------------------------
 
     if (draggingNode === 'end') {
       if (node.isStart || node.isWall) {
@@ -368,6 +396,10 @@ function App() {
       return;
     }
 
+    // ------------------------------------------
+    // DRAW / ERASE WALLS
+    // ------------------------------------------
+
     if (wallMode) {
       if (node.isStart || node.isEnd) {
         return;
@@ -399,6 +431,10 @@ function App() {
     setDraggingNode(null);
     setWallMode(null);
   }
+
+  // ==========================================
+  // WEIGHTS
+  // ==========================================
 
   function handleRightClick(
     row: number,
@@ -446,6 +482,7 @@ function App() {
 
   return (
     <div className="app">
+
       {/* Header */}
       <header className="app-header">
         <div>
@@ -453,7 +490,9 @@ function App() {
             ALGORITHM LAB
           </span>
 
-          <h1>Pathfinding Visualizer</h1>
+          <h1>
+            Pathfinding Visualizer
+          </h1>
 
           <p className="app-subtitle">
             Explore, visualize and compare
@@ -470,29 +509,38 @@ function App() {
             }`}
           />
 
-          <span>{statusMessage}</span>
+          <span>
+            {statusMessage}
+          </span>
         </div>
       </header>
 
       {/* Main workspace */}
       <main className="visualizer-workspace">
+
         {/* Grid */}
         <section className="grid-card">
+
           <div className="grid-card-header">
+
             <div>
               <span className="card-eyebrow">
                 VISUALIZER
               </span>
 
-              <h2>Pathfinding Grid</h2>
+              <h2>
+                Pathfinding Grid
+              </h2>
             </div>
 
             <span className="grid-size">
               {NUM_ROWS} × {NUM_COLS}
             </span>
+
           </div>
 
           <div className="grid-wrapper">
+
             <Grid
               grid={grid}
               onMouseDown={handleMouseDown}
@@ -506,39 +554,68 @@ function App() {
                 pathNodeIndices
               }
             />
+
           </div>
 
           <Legend />
+
         </section>
 
         {/* Controls */}
         <ControlPanel
-          onVisualizeBFS={handleVisualizeBFS}
-          onVisualizeDFS={handleVisualizeDFS}
+          onVisualizeBFS={
+            handleVisualizeBFS
+          }
+
+          onVisualizeDFS={
+            handleVisualizeDFS
+          }
+
           onVisualizeDijkstra={
             handleVisualizeDijkstra
           }
-          onVisualizeAStar={handleVisualizeAStar}
-          onReset={handleReset}
+
+          onVisualizeAStar={
+            handleVisualizeAStar
+          }
+
+          onReset={
+            handleReset
+          }
+
           onGenerateRandomMaze={
             handleGenerateRandomMaze
           }
+
           onGenerateRecursiveBacktracking={
             handleGenerateRecursiveBacktracking
           }
+
           onGeneratePrimsMaze={
             handleGeneratePrimsMaze
           }
+
           onCompareAlgorithms={
             handleCompareAlgorithms
           }
+
           isRunning={isRunning}
           isAnimating={isAnimating}
           isComparing={isComparing}
-          animationSpeed={animationSpeed}
-          onSpeedChange={setAnimationSpeed}
-          statusMessage={statusMessage}
+
+          animationSpeed={
+            animationSpeed
+          }
+
+          onSpeedChange={
+            setAnimationSpeed
+          }
+
+          statusMessage={
+            statusMessage
+          }
         />
+
       </main>
 
       {/* Algorithm Information */}
@@ -551,13 +628,16 @@ function App() {
         result &&
         !isAnimating && (
           <section className="secondary-section">
-            <StatsPanel stats={result.stats} />
+            <StatsPanel
+              stats={result.stats}
+            />
           </section>
         )}
 
       {/* Comparison */}
       {comparisonComplete && (
         <section className="secondary-section">
+
           <ComparisonPanel
             results={comparisonResults}
             onClear={() => {
@@ -568,8 +648,10 @@ function App() {
               setStatusMessage('Ready');
             }}
           />
+
         </section>
       )}
+
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect, useRef } from 'react';
-import type { Node, AlgorithmResult } from '../types';
+import type { AlgorithmResult } from '../types';
 
 export function useAnimationPlayer(
   result: AlgorithmResult | null,
@@ -16,14 +16,17 @@ export function useAnimationPlayer(
 
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const visitedIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pathIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const visitedIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
+
+  const pathIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
 
   const completionCallbackRef = useRef(onAnimationComplete);
 
-  useLayoutEffect(() => {
-    completionCallbackRef.current = onAnimationComplete;
-  }, [onAnimationComplete]);
+  completionCallbackRef.current = onAnimationComplete;
 
   useLayoutEffect(() => {
     if (!result) {
@@ -42,6 +45,13 @@ export function useAnimationPlayer(
       return;
     }
 
+    /*
+     * Store the non-null result locally.
+     * This prevents TypeScript from thinking result
+     * might become null inside the nested function.
+     */
+    const currentResult = result;
+
     setIsAnimating(true);
     setVisitedNodeIndices(new Set());
     setPathNodeIndices(new Set());
@@ -49,19 +59,25 @@ export function useAnimationPlayer(
     let visitedIndex = 0;
 
     const visitedInterval = setInterval(() => {
-      if (visitedIndex < result.visitedNodesInOrder.length) {
-        const node = result.visitedNodesInOrder[visitedIndex];
+      if (
+        visitedIndex <
+        currentResult.visitedNodesInOrder.length
+      ) {
+        const node =
+          currentResult.visitedNodesInOrder[visitedIndex];
 
-        setVisitedNodeIndices((prev) => {
-          const next = new Set(prev);
+        setVisitedNodeIndices((previous) => {
+          const next = new Set(previous);
+
           next.add(`${node.row},${node.col}`);
+
           return next;
         });
 
         visitedIndex++;
       } else {
         clearInterval(visitedInterval);
-        visitedIntervalRef.current = null;
+
         animatePath();
       }
     }, 10 / speed);
@@ -72,19 +88,24 @@ export function useAnimationPlayer(
       let pathIndex = 0;
 
       const pathInterval = setInterval(() => {
-        if (pathIndex < result.shortestPath.length) {
-          const node = result.shortestPath[pathIndex];
+        if (
+          pathIndex <
+          currentResult.shortestPath.length
+        ) {
+          const node =
+            currentResult.shortestPath[pathIndex];
 
-          setPathNodeIndices((prev) => {
-            const next = new Set(prev);
+          setPathNodeIndices((previous) => {
+            const next = new Set(previous);
+
             next.add(`${node.row},${node.col}`);
+
             return next;
           });
 
           pathIndex++;
         } else {
           clearInterval(pathInterval);
-          pathIntervalRef.current = null;
 
           setIsAnimating(false);
 
@@ -98,12 +119,10 @@ export function useAnimationPlayer(
     return () => {
       if (visitedIntervalRef.current) {
         clearInterval(visitedIntervalRef.current);
-        visitedIntervalRef.current = null;
       }
 
       if (pathIntervalRef.current) {
         clearInterval(pathIntervalRef.current);
-        pathIntervalRef.current = null;
       }
     };
   }, [result, speed]);
