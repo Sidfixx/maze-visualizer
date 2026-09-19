@@ -1,77 +1,208 @@
+/* ========================================= */
+/* COMPARISON PANEL                          */
+/* ========================================= */
+
 .comparison-panel {
+  width: 100%;
+
   margin-top: 20px;
-  padding: 18px 20px;
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 10px;
+  padding: 24px;
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow-md);
+
   box-sizing: border-box;
 }
+
+/* ========================================= */
+/* HEADER                                    */
+/* ========================================= */
 
 .comparison-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 16px;
+
   margin-bottom: 16px;
 }
 
 .comparison-title {
   margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
+
+  color: var(--text-primary);
+
+  font-size: 21px;
+  font-weight: 700;
+
+  line-height: 1.2;
+  letter-spacing: -0.2px;
 }
 
+/* ========================================= */
+/* CLEAR BUTTON                              */
+/* ========================================= */
+
 .comparison-clear {
-  padding: 7px 12px;
-  font-size: 12px;
+  flex-shrink: 0;
+
+  min-height: 34px;
+
+  padding: 8px 13px;
+
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  background: var(--surface-soft);
+
+  color: var(--text-secondary);
+
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
+
+.comparison-clear:hover {
+  border-color: rgba(23, 105, 255, 0.3);
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+
+  transform: translateY(-1px);
+}
+
+.comparison-clear:active {
+  transform: translateY(0);
+}
+
+/* ========================================= */
+/* TABLE WRAPPER                             */
+/* ========================================= */
 
 .comparison-table-wrapper {
   width: 100%;
+
   overflow-x: auto;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  background: var(--surface);
+
+  box-sizing: border-box;
 }
+
+/* ========================================= */
+/* TABLE                                     */
+/* ========================================= */
 
 .comparison-table {
   width: 100%;
+
   border-collapse: collapse;
-  font-size: 13px;
+
+  font-size: 12px;
 }
+
+/* ========================================= */
+/* TABLE HEADER                              */
+/* ========================================= */
 
 .comparison-table th {
-  padding: 11px 12px;
+  padding: 12px 14px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: var(--surface-soft);
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+  font-weight: 800;
+
   text-align: left;
-  color: #888;
-  background-color: #252525;
-  font-size: 11px;
-  font-weight: 600;
+
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.65px;
+
+  white-space: nowrap;
 }
 
+/* ========================================= */
+/* TABLE CELLS                               */
+/* ========================================= */
+
 .comparison-table td {
-  padding: 12px;
-  border-top: 1px solid #333;
-  color: #ccc;
+  padding: 13px 14px;
+
+  border-top: 1px solid var(--border);
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+  font-weight: 500;
+
+  line-height: 1.35;
+
+  white-space: nowrap;
+}
+
+.comparison-table tbody tr:first-child td {
+  border-top: none;
+}
+
+.comparison-table tbody tr {
+  transition:
+    background-color 0.15s ease;
 }
 
 .comparison-table tbody tr:hover {
-  background-color: #252525;
+  background: var(--surface-soft);
 }
+
+/* ========================================= */
+/* ALGORITHM NAME                            */
+/* ========================================= */
 
 .comparison-algorithm {
-  font-weight: 600;
-  color: #378add !important;
+  color: var(--primary) !important;
+
+  font-weight: 700 !important;
 }
 
-/* Responsive */
+/* ========================================= */
+/* RESPONSIVE                                */
+/* ========================================= */
 
 @media (max-width: 700px) {
+  .comparison-panel {
+    padding: 16px;
+  }
+
   .comparison-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .comparison-clear {
+    width: 100%;
   }
 
   .comparison-table {
