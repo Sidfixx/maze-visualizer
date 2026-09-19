@@ -7,8 +7,10 @@ interface ControlPanelProps {
   onGenerateRandomMaze: () => void;
   onGenerateRecursiveBacktracking: () => void;
   onGeneratePrimsMaze: () => void;
+  onCompareAlgorithms: () => void;
   isRunning: boolean;
   isAnimating: boolean;
+  isComparing: boolean;
   animationSpeed: number;
   onSpeedChange: (speed: number) => void;
 }
@@ -22,12 +24,15 @@ export function ControlPanel({
   onGenerateRandomMaze,
   onGenerateRecursiveBacktracking,
   onGeneratePrimsMaze,
+  onCompareAlgorithms,
   isRunning,
   isAnimating,
+  isComparing,
   animationSpeed,
   onSpeedChange,
 }: ControlPanelProps) {
-  const controlsDisabled = isRunning || isAnimating;
+  const controlsDisabled =
+    isRunning || isAnimating || isComparing;
 
   return (
     <div className="control-panel">
@@ -105,6 +110,23 @@ export function ControlPanel({
         </div>
       </div>
 
+      {/* Comparison */}
+      <div className="control-section">
+        <h2 className="control-section-title">
+          Analysis
+        </h2>
+
+        <div className="control-group">
+          <button
+            onClick={onCompareAlgorithms}
+            disabled={controlsDisabled}
+            className="btn btn-compare"
+          >
+            Compare Algorithms
+          </button>
+        </div>
+      </div>
+
       {/* Speed Control */}
       <div className="control-section speed-section">
         <h2 className="control-section-title">
@@ -119,7 +141,9 @@ export function ControlPanel({
             min="1"
             max="10"
             value={animationSpeed}
-            onChange={(e) => onSpeedChange(Number(e.target.value))}
+            onChange={(e) =>
+              onSpeedChange(Number(e.target.value))
+            }
             className="speed-slider"
           />
 

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { StatsPanel } from './components/Stats/StatsPanel';
+import { ComparisonPanel } from './components/Comparison/ComparisonPanel';
 import Grid from './components/Grid/Grid';
 import { ControlPanel } from './components/Controls/ControlPanel';
 import { createInitialGrid } from './utils/gridUtils';
 import { useAlgorithmRunner } from './hooks/useAlgorithmRunner';
+import { useAlgorithmComparison } from './hooks/useAlgorithmComparison';
 import { useAnimationPlayer } from './hooks/useAnimationPlayer';
 import { generateRandomMaze } from './mazes/randomMaze';
 import { generateRecursiveBacktrackingMaze } from './mazes/recursiveBacktracking';
 import { prims } from './algorithms/mazeGeneration/prims';
-import type { Node } from './types';
+import type { Node, AlgorithmResult } from './types';
 
 const NUM_ROWS = 15;
 const NUM_COLS = 40;
@@ -24,14 +26,15 @@ function App() {
     'start' | 'end' | null
   >(null);
 
-  // Determines whether normal mouse dragging should
-  // create walls or erase walls.
-  const [wallMode, setWallMode] = useState<'draw' | 'erase' | null>(
-    null
-  );
+  const [wallMode, setWallMode] = useState<
+    'draw' | 'erase' | null
+  >(null);
 
   const [animationSpeed, setAnimationSpeed] = useState(5);
 
+  const [isComparisonPlayback, setIsComparisonPlayback] = useState(false);
+const [comparisonIndex, setComparisonIndex] = useState(0);
+const [comparisonComplete, setComparisonComplete] = useState(false);
 
   const {
     result,
@@ -44,56 +47,97 @@ function App() {
   } = useAlgorithmRunner();
 
   const {
-    visitedNodeIndices,
-    pathNodeIndices,
-    isAnimating,
-  } = useAnimationPlayer(result, animationSpeed);
+    comparisonResults,
+    isComparing,
+    runComparison,
+    clearComparison,
+  } = useAlgorithmComparison();
+
+  const activeAnimationResult: AlgorithmResult | null =
+    isComparisonPlayback
+      ? comparisonResults[comparisonIndex] ?? null
+      : result;
+
+  const { visitedNodeIndices, pathNodeIndices, isAnimating } =
+  useAnimationPlayer(
+    activeAnimationResult,
+    animationSpeed,
+    () => {
+      if (!isComparisonPlayback) {
+        return;
+      }
+
+      if (comparisonIndex < comparisonResults.length - 1) {
+        setComparisonIndex((currentIndex) => currentIndex + 1);
+      } else {
+        setIsComparisonPlayback(false);
+        setComparisonComplete(true);
+      }
+    }
+  );
 
   const startNode = grid.flat().find((node) => node.isStart)!;
   const endNode = grid.flat().find((node) => node.isEnd)!;
 
-  // -----------------------------
-  // Pathfinding
-  // -----------------------------
-
   function handleVisualizeBFS() {
-    runBFS(grid, startNode, endNode);
-  }
+  setIsComparisonPlayback(false);
+  setComparisonComplete(false);
+  clearComparison();
+  runBFS(grid, startNode, endNode);
+}
 
-  function handleVisualizeDFS() {
-    runDFS(grid, startNode, endNode);
-  }
+ function handleVisualizeDFS() {
+  setIsComparisonPlayback(false);
+  setComparisonComplete(false);
+  clearComparison();
+  runBFS(grid, startNode, endNode);
+}
 
   function handleVisualizeDijkstra() {
-    runDijkstra(grid, startNode, endNode);
-  }
+  setIsComparisonPlayback(false);
+  setComparisonComplete(false);
+  clearComparison();
+  runBFS(grid, startNode, endNode);
+}
 
   function handleVisualizeAStar() {
-    runAStar(grid, startNode, endNode);
-  }
+  setIsComparisonPlayback(false);
+  setComparisonComplete(false);
+  clearComparison();
+  runBFS(grid, startNode, endNode);
+}
 
-  // -----------------------------
-  // Reset Algorithm
-  // -----------------------------
+  function handleCompareAlgorithms() {
+  setIsComparisonPlayback(true);
+  setComparisonIndex(0);
+  setComparisonComplete(false);
+
+  runComparison(grid, startNode, endNode);
+}
 
   function handleReset() {
-    reset(grid);
+  reset(grid);
+  clearComparison();
 
-    setDraggingNode(null);
-    setMouseIsPressed(false);
-    setWallMode(null);
-  }
+  setIsComparisonPlayback(false);
+  setComparisonIndex(0);
+  setComparisonComplete(false);
 
-  // -----------------------------
-  // Maze Generation
-  // -----------------------------
+  setDraggingNode(null);
+  setMouseIsPressed(false);
+  setWallMode(null);
+}
 
   function handleGenerateRandomMaze() {
     reset(grid);
+    clearComparison();
+
+    setIsComparisonPlayback(false);
+    setComparisonIndex(0);
 
     const newGrid = generateRandomMaze(grid);
-    setGrid(newGrid);
 
+    setGrid(newGrid);
     setDraggingNode(null);
     setMouseIsPressed(false);
     setWallMode(null);
@@ -101,10 +145,14 @@ function App() {
 
   function handleGenerateRecursiveBacktracking() {
     reset(grid);
+    clearComparison();
+
+    setIsComparisonPlayback(false);
+    setComparisonIndex(0);
 
     const newGrid = generateRecursiveBacktrackingMaze(grid);
-    setGrid(newGrid);
 
+    setGrid(newGrid);
     setDraggingNode(null);
     setMouseIsPressed(false);
     setWallMode(null);
@@ -112,18 +160,18 @@ function App() {
 
   function handleGeneratePrimsMaze() {
     reset(grid);
+    clearComparison();
+
+    setIsComparisonPlayback(false);
+    setComparisonIndex(0);
 
     const newGrid = prims(grid);
-    setGrid(newGrid);
 
+    setGrid(newGrid);
     setDraggingNode(null);
     setMouseIsPressed(false);
     setWallMode(null);
   }
-
-  // -----------------------------
-  // Mouse Down
-  // -----------------------------
 
   function handleMouseDown(
     row: number,
@@ -134,19 +182,11 @@ function App() {
 
     const node = grid[row][col];
 
-    // -----------------------------
-    // Start node dragging
-    // -----------------------------
-
     if (node.isStart) {
       setDraggingNode('start');
       setMouseIsPressed(true);
       return;
     }
-
-    // -----------------------------
-    // End node dragging
-    // -----------------------------
 
     if (node.isEnd) {
       setDraggingNode('end');
@@ -154,18 +194,10 @@ function App() {
       return;
     }
 
-    // -----------------------------
-    // Normal wall interaction
-    // -----------------------------
-
     if (!node.isStart && !node.isEnd) {
-      // If the clicked cell is already a wall,
-      // we are in erase mode.
       if (node.isWall) {
         setWallMode('erase');
       } else {
-        // If the clicked cell is empty,
-        // we are in draw mode.
         setWallMode('draw');
       }
 
@@ -182,25 +214,16 @@ function App() {
     setMouseIsPressed(true);
   }
 
-  // -----------------------------
-  // Mouse Enter
-  // -----------------------------
-
   function handleMouseEnter(row: number, col: number) {
     if (!mouseIsPressed) return;
 
     const node = grid[row][col];
-
-    // -----------------------------
-    // Dragging Start
-    // -----------------------------
 
     if (draggingNode === 'start') {
       if (node.isEnd || node.isWall) return;
 
       const newGrid = grid.map((row) => [...row]);
 
-      // Remove old Start
       for (const currentRow of newGrid) {
         for (const currentNode of currentRow) {
           if (currentNode.isStart) {
@@ -209,7 +232,6 @@ function App() {
         }
       }
 
-      // Place new Start
       newGrid[row][col] = {
         ...node,
         isStart: true,
@@ -221,16 +243,11 @@ function App() {
       return;
     }
 
-    // -----------------------------
-    // Dragging End
-    // -----------------------------
-
     if (draggingNode === 'end') {
       if (node.isStart || node.isWall) return;
 
       const newGrid = grid.map((row) => [...row]);
 
-      // Remove old End
       for (const currentRow of newGrid) {
         for (const currentNode of currentRow) {
           if (currentNode.isEnd) {
@@ -239,7 +256,6 @@ function App() {
         }
       }
 
-      // Place new End
       newGrid[row][col] = {
         ...node,
         isEnd: true,
@@ -250,10 +266,6 @@ function App() {
       setGrid(newGrid);
       return;
     }
-
-    // -----------------------------
-    // Normal wall drawing/erasing
-    // -----------------------------
 
     if (!node.isStart && !node.isEnd && wallMode !== null) {
       const newGrid = grid.map((row) => [...row]);
@@ -267,24 +279,15 @@ function App() {
     }
   }
 
-  // -----------------------------
-  // Mouse Up
-  // -----------------------------
-
   function handleMouseUp() {
     setMouseIsPressed(false);
     setDraggingNode(null);
     setWallMode(null);
   }
 
-  // -----------------------------
-  // Right Click / Weight
-  // -----------------------------
-
   function handleRightClick(row: number, col: number) {
     const node = grid[row][col];
 
-    // Cannot weight Start, End or walls
     if (node.isStart || node.isEnd || node.isWall) return;
 
     const newGrid = grid.map((row) => [...row]);
@@ -299,17 +302,11 @@ function App() {
     setGrid(newGrid);
   }
 
-  // -----------------------------
-  // Render
-  // -----------------------------
-
   return (
     <div className="app">
       <h1>Pathfinding Visualizer</h1>
 
       <ControlPanel
-        animationSpeed={animationSpeed}
-        onSpeedChange={setAnimationSpeed}
         onVisualizeBFS={handleVisualizeBFS}
         onVisualizeDFS={handleVisualizeDFS}
         onVisualizeDijkstra={handleVisualizeDijkstra}
@@ -320,8 +317,12 @@ function App() {
           handleGenerateRecursiveBacktracking
         }
         onGeneratePrimsMaze={handleGeneratePrimsMaze}
+        onCompareAlgorithms={handleCompareAlgorithms}
         isRunning={isRunning}
         isAnimating={isAnimating}
+        isComparing={isComparing}
+        animationSpeed={animationSpeed}
+        onSpeedChange={setAnimationSpeed}
       />
 
       <Grid
@@ -334,10 +335,25 @@ function App() {
         pathNodeIndices={pathNodeIndices}
       />
 
-        {result && !isAnimating && (
-        <StatsPanel stats={result.stats} />
-        )}    </div>
-         );
-          }
+      {!isComparisonPlayback &&
+        result &&
+        !isAnimating && (
+          <StatsPanel stats={result.stats} />
+        )}
+
+      {comparisonComplete && (
+  <ComparisonPanel
+    results={comparisonResults}
+    onClear={() => {
+      clearComparison();
+      setIsComparisonPlayback(false);
+      setComparisonIndex(0);
+      setComparisonComplete(false);
+    }}
+  />
+)}
+    </div>
+  );
+}
 
 export default App;

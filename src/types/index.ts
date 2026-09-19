@@ -20,3 +20,6 @@ export interface AlgorithmStats {
   executionTime: number;
   algorithm: string;
 }
+export interface AlgorithmComparison {
+  results: AlgorithmResult[];
+}

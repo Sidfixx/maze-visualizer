@@ -3,7 +3,8 @@ import type { Node, AlgorithmResult } from '../types';
 
 export function useAnimationPlayer(
   result: AlgorithmResult | null,
-  speed: number = 1
+  speed: number = 1,
+  onAnimationComplete?: () => void
 ) {
   const [visitedNodeIndices, setVisitedNodeIndices] = useState<Set<string>>(
     new Set()
@@ -17,6 +18,12 @@ export function useAnimationPlayer(
 
   const visitedIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pathIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const completionCallbackRef = useRef(onAnimationComplete);
+
+  useLayoutEffect(() => {
+    completionCallbackRef.current = onAnimationComplete;
+  }, [onAnimationComplete]);
 
   useLayoutEffect(() => {
     if (!result) {
@@ -35,7 +42,6 @@ export function useAnimationPlayer(
       return;
     }
 
-    // Start animation before the browser paints
     setIsAnimating(true);
     setVisitedNodeIndices(new Set());
     setPathNodeIndices(new Set());
@@ -55,6 +61,7 @@ export function useAnimationPlayer(
         visitedIndex++;
       } else {
         clearInterval(visitedInterval);
+        visitedIntervalRef.current = null;
         animatePath();
       }
     }, 10 / speed);
@@ -77,7 +84,11 @@ export function useAnimationPlayer(
           pathIndex++;
         } else {
           clearInterval(pathInterval);
+          pathIntervalRef.current = null;
+
           setIsAnimating(false);
+
+          completionCallbackRef.current?.();
         }
       }, 50 / speed);
 
@@ -87,10 +98,12 @@ export function useAnimationPlayer(
     return () => {
       if (visitedIntervalRef.current) {
         clearInterval(visitedIntervalRef.current);
+        visitedIntervalRef.current = null;
       }
 
       if (pathIntervalRef.current) {
         clearInterval(pathIntervalRef.current);
+        pathIntervalRef.current = null;
       }
     };
   }, [result, speed]);

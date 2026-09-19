@@ -249,3 +249,14 @@
   color: #aaa;
   text-align: center;
 }
+
+/* Algorithm comparison */
+
+.btn-compare {
+  background-color: #7f77dd;
+  color: white;
+}
+
+.btn-compare:hover:not(:disabled) {
+  background-color: #6259c7;
+}
