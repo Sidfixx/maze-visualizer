@@ -8,11 +8,15 @@ interface ControlPanelProps {
   onGenerateRecursiveBacktracking: () => void;
   onGeneratePrimsMaze: () => void;
   onCompareAlgorithms: () => void;
+
   isRunning: boolean;
   isAnimating: boolean;
   isComparing: boolean;
+
   animationSpeed: number;
   onSpeedChange: (speed: number) => void;
+
+  statusMessage: string;
 }
 
 export function ControlPanel({
@@ -30,9 +34,12 @@ export function ControlPanel({
   isComparing,
   animationSpeed,
   onSpeedChange,
+  statusMessage,
 }: ControlPanelProps) {
   const controlsDisabled =
     isRunning || isAnimating || isComparing;
+
+  const isReady = statusMessage === 'Ready';
 
   return (
     <div className="control-panel">
@@ -110,7 +117,7 @@ export function ControlPanel({
         </div>
       </div>
 
-      {/* Comparison */}
+      {/* Analysis */}
       <div className="control-section">
         <h2 className="control-section-title">
           Analysis
@@ -127,7 +134,7 @@ export function ControlPanel({
         </div>
       </div>
 
-      {/* Speed Control */}
+      {/* Animation Speed */}
       <div className="control-section speed-section">
         <h2 className="control-section-title">
           Animation Speed
@@ -153,6 +160,23 @@ export function ControlPanel({
         <span className="speed-value">
           {animationSpeed}/10
         </span>
+      </div>
+
+      {/* Status */}
+      <div className="control-section status-section">
+        <div className="status-indicator">
+          <span
+            className={`status-dot ${
+              isReady
+                ? 'status-ready'
+                : 'status-active'
+            }`}
+          />
+
+          <span className="status-message">
+            {statusMessage}
+          </span>
+        </div>
       </div>
 
       {/* Reset */}

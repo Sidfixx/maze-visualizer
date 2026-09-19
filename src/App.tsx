@@ -1,18 +1,26 @@
-import { Legend } from './components/Legend/Legend';
-import { AlgorithmInfoPanel } from './components/AlgorithmInfo/AlgorithmInfoPanel';
 import { useState } from 'react';
+
 import { StatsPanel } from './components/Stats/StatsPanel';
 import { ComparisonPanel } from './components/Comparison/ComparisonPanel';
+import { AlgorithmInfoPanel } from './components/AlgorithmInfo/AlgorithmInfoPanel';
+import { Legend } from './components/Legend/Legend';
 import Grid from './components/Grid/Grid';
 import { ControlPanel } from './components/Controls/ControlPanel';
+
 import { createInitialGrid } from './utils/gridUtils';
+
 import { useAlgorithmRunner } from './hooks/useAlgorithmRunner';
 import { useAlgorithmComparison } from './hooks/useAlgorithmComparison';
 import { useAnimationPlayer } from './hooks/useAnimationPlayer';
+
 import { generateRandomMaze } from './mazes/randomMaze';
 import { generateRecursiveBacktrackingMaze } from './mazes/recursiveBacktracking';
 import { prims } from './algorithms/mazeGeneration/prims';
-import type { Node, AlgorithmResult } from './types';
+
+import type {
+  Node,
+  AlgorithmResult,
+} from './types';
 
 const NUM_ROWS = 15;
 const NUM_COLS = 40;
@@ -22,7 +30,8 @@ function App() {
     createInitialGrid(NUM_ROWS, NUM_COLS)
   );
 
-  const [mouseIsPressed, setMouseIsPressed] = useState(false);
+  const [mouseIsPressed, setMouseIsPressed] =
+    useState(false);
 
   const [draggingNode, setDraggingNode] = useState<
     'start' | 'end' | null
@@ -32,11 +41,20 @@ function App() {
     'draw' | 'erase' | null
   >(null);
 
-  const [animationSpeed, setAnimationSpeed] = useState(5);
+  const [animationSpeed, setAnimationSpeed] =
+    useState(5);
 
-  const [isComparisonPlayback, setIsComparisonPlayback] = useState(false);
-const [comparisonIndex, setComparisonIndex] = useState(0);
-const [comparisonComplete, setComparisonComplete] = useState(false);
+  const [isComparisonPlayback, setIsComparisonPlayback] =
+    useState(false);
+
+  const [comparisonIndex, setComparisonIndex] =
+    useState(0);
+
+  const [comparisonComplete, setComparisonComplete] =
+    useState(false);
+
+  const [statusMessage, setStatusMessage] =
+    useState('Ready');
 
   const {
     result,
@@ -60,224 +78,310 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
       ? comparisonResults[comparisonIndex] ?? null
       : result;
 
-  const { visitedNodeIndices, pathNodeIndices, isAnimating } =
-  useAnimationPlayer(
+  const {
+    visitedNodeIndices,
+    pathNodeIndices,
+    isAnimating,
+  } = useAnimationPlayer(
     activeAnimationResult,
     animationSpeed,
     () => {
       if (!isComparisonPlayback) {
+        setStatusMessage('Ready');
         return;
       }
 
-      if (comparisonIndex < comparisonResults.length - 1) {
-        setComparisonIndex((currentIndex) => currentIndex + 1);
+      if (
+        comparisonIndex <
+        comparisonResults.length - 1
+      ) {
+        setComparisonIndex(
+          (currentIndex) => currentIndex + 1
+        );
       } else {
         setIsComparisonPlayback(false);
         setComparisonComplete(true);
+        setStatusMessage('Comparison complete');
       }
     }
   );
 
-  const startNode = grid.flat().find((node) => node.isStart)!;
-  const endNode = grid.flat().find((node) => node.isEnd)!;
+  const startNode = grid
+    .flat()
+    .find((node) => node.isStart)!;
+
+  const endNode = grid
+    .flat()
+    .find((node) => node.isEnd)!;
+
+  // ==========================================
+  // PATHFINDING
+  // ==========================================
 
   function handleVisualizeBFS() {
-  setIsComparisonPlayback(false);
-  setComparisonComplete(false);
-  clearComparison();
-  runBFS(grid, startNode, endNode);
-}
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    clearComparison();
+    setStatusMessage('Visualizing BFS...');
 
- function handleVisualizeDFS() {
-  setIsComparisonPlayback(false);
-  setComparisonComplete(false);
-  clearComparison();
-  runBFS(grid, startNode, endNode);
-}
+    runBFS(grid, startNode, endNode);
+  }
+
+  function handleVisualizeDFS() {
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    clearComparison();
+    setStatusMessage('Visualizing DFS...');
+
+    runDFS(grid, startNode, endNode);
+  }
 
   function handleVisualizeDijkstra() {
-  setIsComparisonPlayback(false);
-  setComparisonComplete(false);
-  clearComparison();
-  runBFS(grid, startNode, endNode);
-}
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    clearComparison();
+    setStatusMessage('Visualizing Dijkstra...');
+
+    runDijkstra(grid, startNode, endNode);
+  }
 
   function handleVisualizeAStar() {
-  setIsComparisonPlayback(false);
-  setComparisonComplete(false);
-  clearComparison();
-  runBFS(grid, startNode, endNode);
-}
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    clearComparison();
+    setStatusMessage('Visualizing A*...');
+
+    runAStar(grid, startNode, endNode);
+  }
+
+  // ==========================================
+  // ALGORITHM COMPARISON
+  // ==========================================
 
   function handleCompareAlgorithms() {
-  setIsComparisonPlayback(true);
-  setComparisonIndex(0);
-  setComparisonComplete(false);
+    setIsComparisonPlayback(true);
+    setComparisonIndex(0);
+    setComparisonComplete(false);
+    setStatusMessage('Comparing algorithms...');
 
-  runComparison(grid, startNode, endNode);
-}
+    runComparison(grid, startNode, endNode);
+  }
 
-  function handleReset() {
-  reset(grid);
-  clearComparison();
-
-  setIsComparisonPlayback(false);
-  setComparisonIndex(0);
-  setComparisonComplete(false);
-
-  setDraggingNode(null);
-  setMouseIsPressed(false);
-  setWallMode(null);
-}
+  // ==========================================
+  // MAZE GENERATION
+  // ==========================================
 
   function handleGenerateRandomMaze() {
-    reset(grid);
-    clearComparison();
-
-    setIsComparisonPlayback(false);
-    setComparisonIndex(0);
-
     const newGrid = generateRandomMaze(grid);
 
     setGrid(newGrid);
-    setDraggingNode(null);
-    setMouseIsPressed(false);
-    setWallMode(null);
+    clearComparison();
+
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    setComparisonIndex(0);
+    setStatusMessage('Ready');
   }
 
   function handleGenerateRecursiveBacktracking() {
-    reset(grid);
+    const newGrid =
+      generateRecursiveBacktrackingMaze(grid);
+
+    setGrid(newGrid);
     clearComparison();
 
     setIsComparisonPlayback(false);
+    setComparisonComplete(false);
     setComparisonIndex(0);
-
-    const newGrid = generateRecursiveBacktrackingMaze(grid);
-
-    setGrid(newGrid);
-    setDraggingNode(null);
-    setMouseIsPressed(false);
-    setWallMode(null);
+    setStatusMessage('Ready');
   }
 
   function handleGeneratePrimsMaze() {
+    const newGrid = prims(grid);
+
+    setGrid(newGrid);
+    clearComparison();
+
+    setIsComparisonPlayback(false);
+    setComparisonComplete(false);
+    setComparisonIndex(0);
+    setStatusMessage('Ready');
+  }
+
+  // ==========================================
+  // RESET
+  // ==========================================
+
+  function handleReset() {
     reset(grid);
     clearComparison();
 
     setIsComparisonPlayback(false);
     setComparisonIndex(0);
+    setComparisonComplete(false);
+    setStatusMessage('Ready');
 
-    const newGrid = prims(grid);
-
-    setGrid(newGrid);
     setDraggingNode(null);
     setMouseIsPressed(false);
     setWallMode(null);
   }
 
+  // ==========================================
+  // GRID INTERACTION
+  // ==========================================
+
   function handleMouseDown(
     row: number,
-    col: number,
-    e: React.MouseEvent<HTMLDivElement>
+    col: number
   ) {
-    if (e.button !== 0) return;
-
     const node = grid[row][col];
 
+    // Start node
     if (node.isStart) {
       setDraggingNode('start');
       setMouseIsPressed(true);
       return;
     }
 
+    // End node
     if (node.isEnd) {
       setDraggingNode('end');
       setMouseIsPressed(true);
       return;
     }
 
-    if (!node.isStart && !node.isEnd) {
-      if (node.isWall) {
-        setWallMode('erase');
-      } else {
-        setWallMode('draw');
-      }
-
-      const newGrid = grid.map((row) => [...row]);
-
-      newGrid[row][col] = {
-        ...node,
-        isWall: !node.isWall,
-      };
-
-      setGrid(newGrid);
+    // Wall drawing / erasing
+    if (node.isWall) {
+      setWallMode('erase');
+    } else {
+      setWallMode('draw');
     }
 
     setMouseIsPressed(true);
+
+    setGrid((currentGrid) =>
+      currentGrid.map((currentRow, rowIndex) =>
+        currentRow.map((currentNode, colIndex) => {
+          if (
+            rowIndex === row &&
+            colIndex === col
+          ) {
+            return {
+              ...currentNode,
+              isWall: !currentNode.isWall,
+            };
+          }
+
+          return currentNode;
+        })
+      )
+    );
   }
 
-  function handleMouseEnter(row: number, col: number) {
-    if (!mouseIsPressed) return;
+  function handleMouseEnter(
+    row: number,
+    col: number
+  ) {
+    if (!mouseIsPressed) {
+      return;
+    }
 
     const node = grid[row][col];
 
+    // Drag Start
     if (draggingNode === 'start') {
-      if (node.isEnd || node.isWall) return;
-
-      const newGrid = grid.map((row) => [...row]);
-
-      for (const currentRow of newGrid) {
-        for (const currentNode of currentRow) {
-          if (currentNode.isStart) {
-            currentNode.isStart = false;
-          }
-        }
+      if (node.isEnd || node.isWall) {
+        return;
       }
 
-      newGrid[row][col] = {
-        ...node,
-        isStart: true,
-        isEnd: false,
-        isWall: false,
-      };
+      setGrid((currentGrid) =>
+        currentGrid.map((currentRow) =>
+          currentRow.map((currentNode) => {
+            if (
+              currentNode.isStart &&
+              currentNode !== node
+            ) {
+              return {
+                ...currentNode,
+                isStart: false,
+              };
+            }
 
-      setGrid(newGrid);
+            if (currentNode === node) {
+              return {
+                ...currentNode,
+                isStart: true,
+                isWall: false,
+              };
+            }
+
+            return currentNode;
+          })
+        )
+      );
+
       return;
     }
 
+    // Drag End
     if (draggingNode === 'end') {
-      if (node.isStart || node.isWall) return;
-
-      const newGrid = grid.map((row) => [...row]);
-
-      for (const currentRow of newGrid) {
-        for (const currentNode of currentRow) {
-          if (currentNode.isEnd) {
-            currentNode.isEnd = false;
-          }
-        }
+      if (node.isStart || node.isWall) {
+        return;
       }
 
-      newGrid[row][col] = {
-        ...node,
-        isEnd: true,
-        isStart: false,
-        isWall: false,
-      };
+      setGrid((currentGrid) =>
+        currentGrid.map((currentRow) =>
+          currentRow.map((currentNode) => {
+            if (
+              currentNode.isEnd &&
+              currentNode !== node
+            ) {
+              return {
+                ...currentNode,
+                isEnd: false,
+              };
+            }
 
-      setGrid(newGrid);
+            if (currentNode === node) {
+              return {
+                ...currentNode,
+                isEnd: true,
+                isWall: false,
+              };
+            }
+
+            return currentNode;
+          })
+        )
+      );
+
       return;
     }
 
-    if (!node.isStart && !node.isEnd && wallMode !== null) {
-      const newGrid = grid.map((row) => [...row]);
+    // Draw / erase walls
+    if (wallMode) {
+      if (node.isStart || node.isEnd) {
+        return;
+      }
 
-      newGrid[row][col] = {
-        ...node,
-        isWall: wallMode === 'draw',
-      };
+      setGrid((currentGrid) =>
+        currentGrid.map((currentRow) =>
+          currentRow.map((currentNode) => {
+            if (
+              currentNode.row === row &&
+              currentNode.col === col
+            ) {
+              return {
+                ...currentNode,
+                isWall:
+                  wallMode === 'draw',
+              };
+            }
 
-      setGrid(newGrid);
+            return currentNode;
+          })
+        )
+      );
     }
   }
 
@@ -287,22 +391,45 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
     setWallMode(null);
   }
 
-  function handleRightClick(row: number, col: number) {
+  function handleRightClick(
+    row: number,
+    col: number
+  ) {
     const node = grid[row][col];
 
-    if (node.isStart || node.isEnd || node.isWall) return;
+    if (
+      node.isStart ||
+      node.isEnd ||
+      node.isWall
+    ) {
+      return;
+    }
 
-    const newGrid = grid.map((row) => [...row]);
+    setGrid((currentGrid) =>
+      currentGrid.map((currentRow) =>
+        currentRow.map((currentNode) => {
+          if (
+            currentNode.row === row &&
+            currentNode.col === col
+          ) {
+            return {
+              ...currentNode,
+              weight:
+                currentNode.weight === 1
+                  ? 5
+                  : 1,
+            };
+          }
 
-    const newWeight = node.weight === 1 ? 5 : 1;
-
-    newGrid[row][col] = {
-      ...node,
-      weight: newWeight,
-    };
-
-    setGrid(newGrid);
+          return currentNode;
+        })
+      )
+    );
   }
+
+  // ==========================================
+  // RENDER
+  // ==========================================
 
   return (
     <div className="app">
@@ -311,20 +438,29 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
       <ControlPanel
         onVisualizeBFS={handleVisualizeBFS}
         onVisualizeDFS={handleVisualizeDFS}
-        onVisualizeDijkstra={handleVisualizeDijkstra}
+        onVisualizeDijkstra={
+          handleVisualizeDijkstra
+        }
         onVisualizeAStar={handleVisualizeAStar}
         onReset={handleReset}
-        onGenerateRandomMaze={handleGenerateRandomMaze}
+        onGenerateRandomMaze={
+          handleGenerateRandomMaze
+        }
         onGenerateRecursiveBacktracking={
           handleGenerateRecursiveBacktracking
         }
-        onGeneratePrimsMaze={handleGeneratePrimsMaze}
-        onCompareAlgorithms={handleCompareAlgorithms}
+        onGeneratePrimsMaze={
+          handleGeneratePrimsMaze
+        }
+        onCompareAlgorithms={
+          handleCompareAlgorithms
+        }
         isRunning={isRunning}
         isAnimating={isAnimating}
         isComparing={isComparing}
         animationSpeed={animationSpeed}
         onSpeedChange={setAnimationSpeed}
+        statusMessage={statusMessage}
       />
 
       <Grid
@@ -333,11 +469,16 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
         onMouseEnter={handleMouseEnter}
         onMouseUp={handleMouseUp}
         onRightClick={handleRightClick}
-        visitedNodeIndices={visitedNodeIndices}
-        pathNodeIndices={pathNodeIndices}
+        visitedNodeIndices={
+          visitedNodeIndices
+        }
+        pathNodeIndices={
+          pathNodeIndices
+        }
       />
 
       <Legend />
+
       <AlgorithmInfoPanel />
 
       {!isComparisonPlayback &&
@@ -347,16 +488,17 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
         )}
 
       {comparisonComplete && (
-  <ComparisonPanel
-    results={comparisonResults}
-    onClear={() => {
-      clearComparison();
-      setIsComparisonPlayback(false);
-      setComparisonIndex(0);
-      setComparisonComplete(false);
-    }}
-  />
-)}
+        <ComparisonPanel
+          results={comparisonResults}
+          onClear={() => {
+            clearComparison();
+            setIsComparisonPlayback(false);
+            setComparisonIndex(0);
+            setComparisonComplete(false);
+            setStatusMessage('Ready');
+          }}
+        />
+      )}
     </div>
   );
 }
