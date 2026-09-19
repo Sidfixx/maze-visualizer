@@ -1,3 +1,4 @@
+import { Legend } from './components/Legend/Legend';
 import { AlgorithmInfoPanel } from './components/AlgorithmInfo/AlgorithmInfoPanel';
 import { useState } from 'react';
 import { StatsPanel } from './components/Stats/StatsPanel';
@@ -335,6 +336,8 @@ const [comparisonComplete, setComparisonComplete] = useState(false);
         visitedNodeIndices={visitedNodeIndices}
         pathNodeIndices={pathNodeIndices}
       />
+
+      <Legend />
       <AlgorithmInfoPanel />
 
       {!isComparisonPlayback &&
